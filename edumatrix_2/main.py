@@ -83,6 +83,11 @@ class EduMatrixApp(QMainWindow):
         self.tab_widget.addTab(self.create_professors_tab(), "Professors")
         self.tab_widget.addTab(self.create_courses_tab(), "Courses")
 
+        # Update tables with existing data
+        self.update_students_table()
+        self.update_professors_table()
+        self.update_courses_table()
+
     def create_professors_tab(self):
         """
         Creates the Professors tab with necessary UI components.
@@ -387,16 +392,17 @@ class EduMatrixApp(QMainWindow):
             return
 
         # Add the student using the student_controller
-        self.student_controller.add_student(first_name, last_name, age, degree_program, completed_credits, gpa)
+        # this seems to be double-adding students
+        # self.student_controller.add_student(first_name, last_name, age, degree_program, completed_credits, gpa)
 
         # Update the students_table with new data
-        self.update_students_table()
+        # self.update_students_table()
 
         # Clear input fields after adding
-        self.clear_student_input_fields()
+        # self.clear_student_input_fields()
 
         # Show message box on success
-        QMessageBox.information(self, "Success", "Student added successfully.")
+        # QMessageBox.information(self, "Success", "Student added successfully.")
 
         if hasattr(self, 'currently_editing_student_id'):
             # Update existing student
