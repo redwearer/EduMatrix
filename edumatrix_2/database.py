@@ -378,6 +378,7 @@ class DatabaseManager:
 
         conn.commit()
         conn.close()
+
     def list_all_courses(self):
         """
         Retrieves all course records from the database.
@@ -391,6 +392,35 @@ class DatabaseManager:
         cursor = conn.cursor()
 
         cursor.execute("SELECT * FROM Courses")
+        courses_data = cursor.fetchall()
+
+        conn.close()
+        return courses_data
+
+    def get_courses_for_student(self, student_id: int):
+        """
+        Retrieves courses for a given student from the database.
+
+        Parameters
+        ----------
+        student_id : int
+
+        Returns
+        -------
+        list
+            A list of courses the student is enrolled in.
+        """
+        conn = self.get_connection()
+        cursor = conn.cursor()
+
+        # Adjust the SQL query based on your database schema
+        cursor.execute("""
+            SELECT c.CourseID, c.Name, c.StartDate, c.EndDate
+            FROM Courses c
+            JOIN Enrollments e ON c.CourseID = e.CourseID
+            WHERE e.StudentID = ?
+        """, (student_id,))
+
         courses_data = cursor.fetchall()
 
         conn.close()

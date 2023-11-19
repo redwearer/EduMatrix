@@ -285,3 +285,19 @@ class CourseController:
         """
         courses_data = self.db_manager.list_all_courses()
         return [Course(*data) for data in courses_data] if courses_data else []
+
+    def get_courses_for_student(self, student_id: int):
+        """
+        Retrieves courses for a given student.
+
+        Parameters
+        ----------
+        student_id : int
+            The ID of the student.
+
+        Returns
+        -------
+        list
+            A list of courses the student is enrolled in.
+        """
+        return self.db_manager.get_courses_for_student(student_id)

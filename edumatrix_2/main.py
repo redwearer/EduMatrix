@@ -366,8 +366,48 @@ class EduMatrixApp(QMainWindow):
         layout.addLayout(form_layout)
         layout.addWidget(self.students_table)
 
+        # Second table for displaying courses for the selected student
+        self.student_courses_table = QTableWidget()
+        self.student_courses_table.setColumnCount(3)  # For example, Course Name, Start Date, End Date
+        self.student_courses_table.setHorizontalHeaderLabels(["Course Name", "Start Date", "End Date"])
+
+        # Layout setup
+        layout.addWidget(self.students_table)
+        layout.addWidget(QLabel("Courses Enrolled:"))  # Label for the second table
+        layout.addWidget(self.student_courses_table)
+
+        # Connect row selection to update the courses table
+        self.students_table.selectionModel().selectionChanged.connect(self.on_student_selected)
+
         student_tab.setLayout(layout)
         return student_tab
+
+    def on_student_selected(self, selected, deselected):
+        if selected.indexes():
+            selected_row = selected.indexes()[0].row()
+            student_id = self.students_table.item(selected_row, 0).text()  # Assuming student ID is in the first column
+            self.populate_student_courses(int(student_id))
+
+    def populate_student_courses(self, student_id):
+        """
+        Populates the student_courses_table with courses the selected student is enrolled in.
+
+        Parameters
+        ----------
+        student_id : int
+            The ID of the selected student.
+        """
+        # Fetch courses for the student
+        courses = self.course_controller.get_courses_for_student(student_id)
+
+        self.student_courses_table.setRowCount(len(courses))
+
+        for row, course in enumerate(courses):
+            # Assuming course data is a tuple like (course_id, course_name, start_date, end_date)
+            self.student_courses_table.setItem(row, 0, QTableWidgetItem(course[1]))  # course_name
+            self.student_courses_table.setItem(row, 1, QTableWidgetItem(course[2]))  # start_date
+            self.student_courses_table.setItem(row, 2, QTableWidgetItem(course[3]))  # end_date
+
 
     def add_or_update_student(self):
         """
