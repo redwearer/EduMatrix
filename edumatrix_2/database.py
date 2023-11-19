@@ -399,7 +399,7 @@ class DatabaseManager:
 
     def get_courses_for_student(self, student_id: int):
         """
-        Retrieves courses for a given student from the database.
+        Retrieves courses for a given student from the database, including credit hours and professor name.
 
         Parameters
         ----------
@@ -408,16 +408,17 @@ class DatabaseManager:
         Returns
         -------
         list
-            A list of courses the student is enrolled in.
+            A list of courses the student is enrolled in, including additional details.
         """
         conn = self.get_connection()
         cursor = conn.cursor()
 
         # Adjust the SQL query based on your database schema
         cursor.execute("""
-            SELECT c.CourseID, c.Name, c.StartDate, c.EndDate
+            SELECT c.Name, c.StartDate, c.EndDate, c.CreditHours, p.FirstName || ' ' || p.LastName as ProfessorName
             FROM Courses c
             JOIN Enrollments e ON c.CourseID = e.CourseID
+            LEFT JOIN Professors p ON c.ProfessorID = p.ProfessorID
             WHERE e.StudentID = ?
         """, (student_id,))
 
