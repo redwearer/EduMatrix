@@ -118,6 +118,9 @@ class EduMatrixApp(QMainWindow):
         self.professors_table.setHorizontalHeaderLabels(["ID","First Name", "Last Name", "Department", "Achievement"])
         self.professors_table.doubleClicked.connect(self.load_professor_for_editing)
 
+        # Connect row selection to update the courses table
+        self.professors_table.selectionModel().selectionChanged.connect(self.on_professor_selected)
+
         # Layout setup
         form_layout = QHBoxLayout()
         form_layout.addWidget(QLabel("First Name:"))
@@ -134,8 +137,24 @@ class EduMatrixApp(QMainWindow):
         layout.addLayout(form_layout)
         layout.addWidget(self.professors_table)
 
+        # Second table for displaying courses taught by the selected professor
+        self.professor_courses_table = QTableWidget()
+        self.professor_courses_table.setColumnCount(4)  # Example: Course Name, Start Date, End Date, Credit Hours
+        self.professor_courses_table.setHorizontalHeaderLabels(["Course Name", "Start Date", "End Date", "Credit Hours"])
+
+        # Layout setup
+        layout.addWidget(self.professors_table)
+        layout.addWidget(QLabel("Courses Taught:"))  # Label for the second table
+        layout.addWidget(self.professor_courses_table)
+
         professor_tab.setLayout(layout)
         return professor_tab
+
+    def on_professor_selected(self, selected, deselected):
+        if selected.indexes():
+            selected_row = selected.indexes()[0].row()
+            professor_id = self.professors_table.item(selected_row, 0).text()  # Assuming professor ID is in the first column
+            self.populate_professor_courses(int(professor_id))
 
     def load_professor_for_editing(self, index):
         """
@@ -155,6 +174,26 @@ class EduMatrixApp(QMainWindow):
             self.professor_last_name_input.setText(professor.last_name)
             self.professor_department_input.setText(professor.department)
             self.professor_achievement_input.setText(professor.academic_achievement)
+
+    def populate_professor_courses(self, professor_id):
+        """
+        Populates the professor_courses_table with courses taught by the selected professor.
+
+        Parameters
+        ----------
+        professor_id : int
+            The ID of the selected professor.
+        """
+        courses = self.course_controller.get_courses_for_professor(professor_id)
+
+        self.professor_courses_table.setRowCount(len(courses))
+
+        for row, course in enumerate(courses):
+            # Assuming course data is a tuple like (course_name, start_date, end_date, credit_hours)
+            self.professor_courses_table.setItem(row, 0, QTableWidgetItem(course[0]))  # Course Name
+            self.professor_courses_table.setItem(row, 1, QTableWidgetItem(course[1]))  # Start Date
+            self.professor_courses_table.setItem(row, 2, QTableWidgetItem(course[2]))  # End Date
+            self.professor_courses_table.setItem(row, 3, QTableWidgetItem(str(course[3])))  # Credit Hours
 
     def add_or_update_professor(self):
         """

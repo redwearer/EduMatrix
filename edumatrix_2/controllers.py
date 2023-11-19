@@ -301,3 +301,19 @@ class CourseController:
             A list of courses the student is enrolled in.
         """
         return self.db_manager.get_courses_for_student(student_id)
+
+    def get_courses_for_professor(self, professor_id: int):
+        """
+        Retrieves courses taught by a given professor.
+
+        Parameters
+        ----------
+        professor_id : int
+            The ID of the professor.
+
+        Returns
+        -------
+        list
+            A list of courses taught by the professor.
+        """
+        return self.db_manager.get_courses_for_professor(professor_id)

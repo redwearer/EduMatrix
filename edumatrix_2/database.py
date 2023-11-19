@@ -426,3 +426,30 @@ class DatabaseManager:
 
         conn.close()
         return courses_data
+
+    def get_courses_for_professor(self, professor_id: int):
+        """
+        Retrieves courses taught by a given professor from the database.
+
+        Parameters
+        ----------
+        professor_id : int
+
+        Returns
+        -------
+        list
+            A list of courses taught by the professor.
+        """
+        conn = self.get_connection()
+        cursor = conn.cursor()
+
+        cursor.execute("""
+            SELECT c.Name, c.StartDate, c.EndDate, c.CreditHours
+            FROM Courses c
+            WHERE c.ProfessorID = ?
+        """, (professor_id,))
+
+        courses_data = cursor.fetchall()
+
+        conn.close()
+        return courses_data
