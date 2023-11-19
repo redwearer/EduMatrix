@@ -57,7 +57,7 @@ class Professor:
         self.academic_achievement = academic_achievement
 
 class Course:
-    def __init__(self, course_id: int, start_date: str, end_date: str, name: str, credit_hours: int, professor_id: Optional[int] = None):
+    def __init__(self, course_id: int, name: str, start_date: str, end_date: str, credit_hours: int, professor_id: Optional[int] = None, professor_name: Optional[str] = None):
         """
         Represents a course.
 
@@ -75,6 +75,7 @@ class Course:
             The number of credit hours for the course.
         professor_id : Optional[int]
             The identifier of the professor teaching the course. Default is None.
+            c.CourseID, c.Name, c.StartDate, c.EndDate, c.CreditHours, p.FirstName || ' ' || p.LastName as ProfessorName
         """
         self.course_id = course_id
         self.start_date = start_date
@@ -82,3 +83,4 @@ class Course:
         self.name = name
         self.credit_hours = credit_hours
         self.professor_id = professor_id
+        self.professor_name = professor_name

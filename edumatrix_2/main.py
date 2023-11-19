@@ -301,8 +301,8 @@ class EduMatrixApp(QMainWindow):
 
         # Table for displaying courses
         self.courses_table = QTableWidget()
-        self.courses_table.setColumnCount(6)  # Number of fields
-        self.courses_table.setHorizontalHeaderLabels(["ID", "Name", "Start Date", "End Date", "Credits", "Professor ID"])
+        self.courses_table.setColumnCount(7)  # Number of fields
+        self.courses_table.setHorizontalHeaderLabels(["ID", "Name", "Start Date", "End Date", "Credits", "Professor ID", "Professor Name"])
         self.courses_table.doubleClicked.connect(self.load_course_for_editing)
 
         # Connect row selection to update the students table
@@ -676,12 +676,13 @@ class EduMatrixApp(QMainWindow):
         self.courses_table.setRowCount(len(courses))
 
         for row, course in enumerate(courses):
-            self.courses_table.setItem(row, 0, QTableWidgetItem(str(course.course_id)))
-            self.courses_table.setItem(row, 1, QTableWidgetItem(course.name))
-            self.courses_table.setItem(row, 2, QTableWidgetItem(course.start_date))
-            self.courses_table.setItem(row, 3, QTableWidgetItem(course.end_date))
-            self.courses_table.setItem(row, 4, QTableWidgetItem(str(course.credit_hours)))
-            self.courses_table.setItem(row, 5, QTableWidgetItem(str(course.professor_id)))
+            self.courses_table.setItem(row, 0, QTableWidgetItem(str(course.course_id)))  # Course ID
+            self.courses_table.setItem(row, 1, QTableWidgetItem(course.name))  # Course Name
+            self.courses_table.setItem(row, 2, QTableWidgetItem(course.start_date))  # Start Date
+            self.courses_table.setItem(row, 3, QTableWidgetItem(course.end_date))  # End Date
+            self.courses_table.setItem(row, 4, QTableWidgetItem(str(course.credit_hours)))  # Credit Hours
+            self.courses_table.setItem(row, 5, QTableWidgetItem(str(course.professor_id)))  # Professor Name
+            self.courses_table.setItem(row, 6, QTableWidgetItem(course.professor_name))  # Professor Name
 
     def load_course_for_editing(self, index):
         """

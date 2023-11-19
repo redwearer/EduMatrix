@@ -381,17 +381,22 @@ class DatabaseManager:
 
     def list_all_courses(self):
         """
-        Retrieves all course records from the database.
+        Retrieves all course records from the database, including the professor's name.
 
         Returns
         -------
         list
-            A list of tuples, each representing a course record.
+            A list of tuples, each representing a course record with the professor's name.
         """
         conn = self.get_connection()
         cursor = conn.cursor()
 
-        cursor.execute("SELECT * FROM Courses")
+        cursor.execute("""
+            SELECT c.CourseID, c.Name, c.StartDate, c.EndDate, c.CreditHours, c.ProfessorID, p.FirstName || ' ' || p.LastName as ProfessorName
+            FROM Courses c
+            LEFT JOIN Professors p ON c.ProfessorID = p.ProfessorID
+        """)
+
         courses_data = cursor.fetchall()
 
         conn.close()
