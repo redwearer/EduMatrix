@@ -305,6 +305,9 @@ class EduMatrixApp(QMainWindow):
         self.courses_table.setHorizontalHeaderLabels(["ID", "Name", "Start Date", "End Date", "Credits", "Professor ID"])
         self.courses_table.doubleClicked.connect(self.load_course_for_editing)
 
+        # Connect row selection to update the students table
+        self.courses_table.selectionModel().selectionChanged.connect(self.on_course_selected)
+
         # Layout setup
         form_layout = QHBoxLayout()
         form_layout.addWidget(QLabel("Name:"))
@@ -323,8 +326,43 @@ class EduMatrixApp(QMainWindow):
         layout.addLayout(form_layout)
         layout.addWidget(self.courses_table)
 
+        # Second table for displaying students enrolled in the selected course
+        self.course_students_table = QTableWidget()
+        self.course_students_table.setColumnCount(3)  # Example: Student ID, First Name, Last Name
+        self.course_students_table.setHorizontalHeaderLabels(["Student ID", "First Name", "Last Name"])
+
+        # Layout setup
+        layout.addWidget(self.courses_table)
+        layout.addWidget(QLabel("Enrolled Students:"))  # Label for the second table
+        layout.addWidget(self.course_students_table)
+
         course_tab.setLayout(layout)
         return course_tab
+
+    def on_course_selected(self, selected, deselected):
+        if selected.indexes():
+            selected_row = selected.indexes()[0].row()
+            course_id = self.courses_table.item(selected_row, 0).text()  # Assuming course ID is in the first column
+            self.populate_course_students(int(course_id))
+
+    def populate_course_students(self, course_id):
+        """
+        Populates the course_students_table with students enrolled in the selected course.
+
+        Parameters
+        ----------
+        course_id : int
+            The ID of the selected course.
+        """
+        students = self.student_controller.get_students_for_course(course_id)
+
+        self.course_students_table.setRowCount(len(students))
+
+        for row, student in enumerate(students):
+            # Assuming student data is a tuple like (student_id, first_name, last_name)
+            self.course_students_table.setItem(row, 0, QTableWidgetItem(str(student[0])))  # Student ID
+            self.course_students_table.setItem(row, 1, QTableWidgetItem(student[1]))  # First Name
+            self.course_students_table.setItem(row, 2, QTableWidgetItem(student[2]))  # Last Name
 
     def load_student_for_editing(self, index):
         """

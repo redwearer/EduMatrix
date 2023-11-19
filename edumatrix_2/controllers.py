@@ -102,6 +102,22 @@ class StudentController:
         students_data = self.db_manager.list_all_students()
         return [Student(*data) for data in students_data] if students_data else []
 
+    def get_students_for_course(self, course_id: int):
+        """
+        Retrieves students enrolled in a given course.
+
+        Parameters
+        ----------
+        course_id : int
+            The ID of the course.
+
+        Returns
+        -------
+        list
+            A list of students enrolled in the course.
+        """
+        return self.db_manager.get_students_for_course(course_id)
+
 class ProfessorController:
     def __init__(self, db_manager: DatabaseManager):
         """

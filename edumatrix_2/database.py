@@ -453,3 +453,31 @@ class DatabaseManager:
 
         conn.close()
         return courses_data
+
+    def get_students_for_course(self, course_id: int):
+        """
+        Retrieves students enrolled in a given course from the database.
+
+        Parameters
+        ----------
+        course_id : int
+
+        Returns
+        -------
+        list
+            A list of students enrolled in the course.
+        """
+        conn = self.get_connection()
+        cursor = conn.cursor()
+
+        cursor.execute("""
+            SELECT s.StudentID, s.FirstName, s.LastName
+            FROM Students s
+            JOIN Enrollments e ON s.StudentID = e.StudentID
+            WHERE e.CourseID = ?
+        """, (course_id,))
+
+        students_data = cursor.fetchall()
+
+        conn.close()
+        return students_data
