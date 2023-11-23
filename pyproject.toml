@@ -1,0 +1,15 @@
+[build-system]
+requires = ["setuptools", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "EduMatrix"
+version = "0.1.0"
+requires-python = ">= 3.9"
+authors = [{name = "Zachary Curran"}]
+description = "A university management system application."
+dependencies = [
+    "PyQt5",
+    "faker",
+]
+readme = "README.md"

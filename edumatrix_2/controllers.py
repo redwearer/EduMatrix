@@ -1,10 +1,15 @@
-# controllers.py
-
+"""
+This module contains the controllers for the application.
+"""
 from typing import List
 from database import DatabaseManager
 from models import Professor, Student, Course
 
+
 class StudentController:
+    """
+    Controller for handling student-related operations.
+    """
     def __init__(self, db_manager: DatabaseManager):
         """
         Controller for handling student-related operations.
@@ -16,7 +21,15 @@ class StudentController:
         """
         self.db_manager = db_manager
 
-    def add_student(self, first_name: str, last_name: str, age: int, degree_program: str, completed_credits: int, gpa: float):
+    def add_student(
+        self,
+        first_name: str,
+        last_name: str,
+        age: int,
+        degree_program: str,
+        completed_credits: int,
+        gpa: float,
+    ):
         """
         Adds a new student to the database.
 
@@ -35,7 +48,9 @@ class StudentController:
         gpa : float
             Student's Grade Point Average.
         """
-        self.db_manager.create_student(first_name, last_name, age, degree_program, completed_credits, gpa)
+        self.db_manager.create_student(
+            first_name, last_name, age, degree_program, completed_credits, gpa
+        )
 
     def get_student(self, student_id: int) -> Student:
         """
@@ -56,7 +71,16 @@ class StudentController:
             return Student(*student_data)
         return None
 
-    def update_student(self, student_id: int, first_name: str, last_name: str, age: int, degree_program: str, completed_credits: int, gpa: float):
+    def update_student(
+        self,
+        student_id: int,
+        first_name: str,
+        last_name: str,
+        age: int,
+        degree_program: str,
+        completed_credits: int,
+        gpa: float,
+    ):
         """
         Updates an existing student's information in the database.
 
@@ -77,7 +101,15 @@ class StudentController:
         gpa : float
             Updated GPA.
         """
-        self.db_manager.update_student(student_id, first_name, last_name, age, degree_program, completed_credits, gpa)
+        self.db_manager.update_student(
+            student_id,
+            first_name,
+            last_name,
+            age,
+            degree_program,
+            completed_credits,
+            gpa,
+        )
 
     def delete_student(self, student_id: int):
         """
@@ -118,7 +150,11 @@ class StudentController:
         """
         return self.db_manager.get_students_for_course(course_id)
 
+
 class ProfessorController:
+    """
+    Controller for handling professor-related operations.
+    """
     def __init__(self, db_manager: DatabaseManager):
         """
         Controller for handling professor-related operations.
@@ -130,7 +166,13 @@ class ProfessorController:
         """
         self.db_manager = db_manager
 
-    def add_professor(self, first_name: str, last_name: str, department: str, academic_achievement: str):
+    def add_professor(
+        self,
+        first_name: str,
+        last_name: str,
+        department: str,
+        academic_achievement: str,
+    ):
         """
         Adds a new professor to the database.
 
@@ -145,7 +187,9 @@ class ProfessorController:
         academic_achievement : str
             The highest academic achievement of the professor (e.g., PhD in Mathematics).
         """
-        self.db_manager.create_professor(first_name, last_name, department, academic_achievement)
+        self.db_manager.create_professor(
+            first_name, last_name, department, academic_achievement
+        )
 
     def get_professor(self, professor_id: int) -> Professor:
         """
@@ -166,7 +210,14 @@ class ProfessorController:
             return Professor(*professor_data)
         return None
 
-    def update_professor(self, professor_id: int, first_name: str, last_name: str, department: str, academic_achievement: str):
+    def update_professor(
+        self,
+        professor_id: int,
+        first_name: str,
+        last_name: str,
+        department: str,
+        academic_achievement: str,
+    ):
         """
         Updates an existing professor's information in the database.
 
@@ -183,7 +234,9 @@ class ProfessorController:
         academic_achievement : str
             Updated academic achievement.
         """
-        self.db_manager.update_professor(professor_id, first_name, last_name, department, academic_achievement)
+        self.db_manager.update_professor(
+            professor_id, first_name, last_name, department, academic_achievement
+        )
 
     def delete_professor(self, professor_id: int):
         """
@@ -208,7 +261,11 @@ class ProfessorController:
         professors_data = self.db_manager.list_all_professors()
         return [Professor(*data) for data in professors_data] if professors_data else []
 
+
 class CourseController:
+    """
+    Controller for handling course-related operations.
+    """
     def __init__(self, db_manager: DatabaseManager):
         """
         Controller for handling course-related operations.
@@ -220,7 +277,14 @@ class CourseController:
         """
         self.db_manager = db_manager
 
-    def add_course(self, start_date: str, end_date: str, name: str, credit_hours: int, professor_id: int):
+    def add_course(
+        self,
+        start_date: str,
+        end_date: str,
+        name: str,
+        credit_hours: int,
+        professor_id: int,
+    ):
         """
         Adds a new course to the database.
 
@@ -237,7 +301,9 @@ class CourseController:
         professor_id : int
             The identifier of the professor teaching the course.
         """
-        self.db_manager.create_course(start_date, end_date, name, credit_hours, professor_id)
+        self.db_manager.create_course(
+            start_date, end_date, name, credit_hours, professor_id
+        )
 
     def get_course(self, course_id: int) -> Course:
         """
@@ -258,7 +324,15 @@ class CourseController:
             return Course(*course_data)
         return None
 
-    def update_course(self, course_id: int, start_date: str, end_date: str, name: str, credit_hours: int, professor_id: int):
+    def update_course(
+        self,
+        course_id: int,
+        start_date: str,
+        end_date: str,
+        name: str,
+        credit_hours: int,
+        professor_id: int,
+    ):
         """
         Updates an existing course's information in the database.
 
@@ -277,7 +351,9 @@ class CourseController:
         professor_id : int
             Updated professor ID.
         """
-        self.db_manager.update_course(course_id, start_date, end_date, name, credit_hours, professor_id)
+        self.db_manager.update_course(
+            course_id, start_date, end_date, name, credit_hours, professor_id
+        )
 
     def delete_course(self, course_id: int):
         """

@@ -1,9 +1,15 @@
-# database.py
-
+"""
+This module contains the DatabaseManager class.
+"""
 import sqlite3
 from sqlite3 import Connection
 
+
 class DatabaseManager:
+    """
+    This class manages the SQLite database.
+    """
+
     def __init__(self, db_path: str):
         """
         Initialize the database manager with the path to the SQLite database.
@@ -34,7 +40,8 @@ class DatabaseManager:
         cursor = conn.cursor()
 
         # Create tables
-        cursor.execute("""
+        cursor.execute(
+            """
             CREATE TABLE IF NOT EXISTS Students (
                 StudentID INTEGER PRIMARY KEY AUTOINCREMENT,
                 FirstName TEXT NOT NULL,
@@ -44,9 +51,11 @@ class DatabaseManager:
                 CompletedCredits INTEGER,
                 GPA REAL
             );
-        """)
+        """
+        )
 
-        cursor.execute("""
+        cursor.execute(
+            """
             CREATE TABLE IF NOT EXISTS Professors (
                 ProfessorID INTEGER PRIMARY KEY AUTOINCREMENT,
                 FirstName TEXT NOT NULL,
@@ -54,9 +63,11 @@ class DatabaseManager:
                 Department TEXT,
                 AcademicAchievement TEXT
             );
-        """)
+        """
+        )
 
-        cursor.execute("""
+        cursor.execute(
+            """
             CREATE TABLE IF NOT EXISTS Courses (
                 CourseID INTEGER PRIMARY KEY AUTOINCREMENT,
                 StartDate TEXT,
@@ -66,9 +77,11 @@ class DatabaseManager:
                 ProfessorID INTEGER,
                 FOREIGN KEY (ProfessorID) REFERENCES Professors(ProfessorID)
             );
-        """)
+        """
+        )
 
-        cursor.execute("""
+        cursor.execute(
+            """
             CREATE TABLE IF NOT EXISTS Enrollments (
                 StudentID INTEGER,
                 CourseID INTEGER,
@@ -77,13 +90,22 @@ class DatabaseManager:
                 FOREIGN KEY (StudentID) REFERENCES Students(StudentID),
                 FOREIGN KEY (CourseID) REFERENCES Courses(CourseID)
             );
-        """)
+        """
+        )
 
         conn.commit()
         conn.close()
 
     # CRUD Operations for Students
-    def create_student(self, first_name: str, last_name: str, age: int, degree_program: str, completed_credits: int, gpa: float):
+    def create_student(
+        self,
+        first_name: str,
+        last_name: str,
+        age: int,
+        degree_program: str,
+        completed_credits: int,
+        gpa: float,
+    ):
         """
         Create a new student record in the database.
 
@@ -99,10 +121,13 @@ class DatabaseManager:
         conn = self.get_connection()
         cursor = conn.cursor()
 
-        cursor.execute("""
+        cursor.execute(
+            """
             INSERT INTO Students (FirstName, LastName, Age, DegreeProgram, CompletedCredits, GPA)
             VALUES (?, ?, ?, ?, ?, ?)
-        """, (first_name, last_name, age, degree_program, completed_credits, gpa))
+        """,
+            (first_name, last_name, age, degree_program, completed_credits, gpa),
+        )
 
         conn.commit()
         conn.close()
@@ -129,7 +154,16 @@ class DatabaseManager:
         conn.close()
         return student
 
-    def update_student(self, student_id: int, first_name: str, last_name: str, age: int, degree_program: str, completed_credits: int, gpa: float):
+    def update_student(
+        self,
+        student_id: int,
+        first_name: str,
+        last_name: str,
+        age: int,
+        degree_program: str,
+        completed_credits: int,
+        gpa: float,
+    ):
         """
         Update a student record in the database.
 
@@ -146,11 +180,22 @@ class DatabaseManager:
         conn = self.get_connection()
         cursor = conn.cursor()
 
-        cursor.execute("""
+        cursor.execute(
+            """
             UPDATE Students
             SET FirstName = ?, LastName = ?, Age = ?, DegreeProgram = ?, CompletedCredits = ?, GPA = ?
             WHERE StudentID = ?
-        """, (first_name, last_name, age, degree_program, completed_credits, gpa, student_id))
+        """,
+            (
+                first_name,
+                last_name,
+                age,
+                degree_program,
+                completed_credits,
+                gpa,
+                student_id,
+            ),
+        )
 
         conn.commit()
         conn.close()
@@ -190,7 +235,13 @@ class DatabaseManager:
         return students_data
 
     # CRUD Operations for Professors
-    def create_professor(self, first_name: str, last_name: str, department: str, academic_achievement: str):
+    def create_professor(
+        self,
+        first_name: str,
+        last_name: str,
+        department: str,
+        academic_achievement: str,
+    ):
         """
         Create a new professor record in the database.
 
@@ -204,10 +255,13 @@ class DatabaseManager:
         conn = self.get_connection()
         cursor = conn.cursor()
 
-        cursor.execute("""
+        cursor.execute(
+            """
             INSERT INTO Professors (FirstName, LastName, Department, AcademicAchievement)
             VALUES (?, ?, ?, ?)
-        """, (first_name, last_name, department, academic_achievement))
+        """,
+            (first_name, last_name, department, academic_achievement),
+        )
 
         conn.commit()
         conn.close()
@@ -228,13 +282,22 @@ class DatabaseManager:
         conn = self.get_connection()
         cursor = conn.cursor()
 
-        cursor.execute("SELECT * FROM Professors WHERE ProfessorID = ?", (professor_id,))
+        cursor.execute(
+            "SELECT * FROM Professors WHERE ProfessorID = ?", (professor_id,)
+        )
         professor = cursor.fetchone()
 
         conn.close()
         return professor
 
-    def update_professor(self, professor_id: int, first_name: str, last_name: str, department: str, academic_achievement: str):
+    def update_professor(
+        self,
+        professor_id: int,
+        first_name: str,
+        last_name: str,
+        department: str,
+        academic_achievement: str,
+    ):
         """
         Update a professor record in the database.
 
@@ -249,11 +312,14 @@ class DatabaseManager:
         conn = self.get_connection()
         cursor = conn.cursor()
 
-        cursor.execute("""
+        cursor.execute(
+            """
             UPDATE Professors
             SET FirstName = ?, LastName = ?, Department = ?, AcademicAchievement = ?
             WHERE ProfessorID = ?
-        """, (first_name, last_name, department, academic_achievement, professor_id))
+        """,
+            (first_name, last_name, department, academic_achievement, professor_id),
+        )
 
         conn.commit()
         conn.close()
@@ -293,7 +359,14 @@ class DatabaseManager:
         return professors_data
 
     # CRUD Operations for Courses
-    def create_course(self, start_date: str, end_date: str, name: str, credit_hours: int, professor_id: int):
+    def create_course(
+        self,
+        start_date: str,
+        end_date: str,
+        name: str,
+        credit_hours: int,
+        professor_id: int,
+    ):
         """
         Create a new course record in the database.
 
@@ -308,10 +381,13 @@ class DatabaseManager:
         conn = self.get_connection()
         cursor = conn.cursor()
 
-        cursor.execute("""
+        cursor.execute(
+            """
             INSERT INTO Courses (StartDate, EndDate, Name, CreditHours, ProfessorID)
             VALUES (?, ?, ?, ?, ?)
-        """, (start_date, end_date, name, credit_hours, professor_id))
+        """,
+            (start_date, end_date, name, credit_hours, professor_id),
+        )
 
         conn.commit()
         conn.close()
@@ -338,7 +414,15 @@ class DatabaseManager:
         conn.close()
         return course
 
-    def update_course(self, course_id: int, start_date: str, end_date: str, name: str, credit_hours: int, professor_id: int):
+    def update_course(
+        self,
+        course_id: int,
+        start_date: str,
+        end_date: str,
+        name: str,
+        credit_hours: int,
+        professor_id: int,
+    ):
         """
         Update a course record in the database.
 
@@ -354,11 +438,14 @@ class DatabaseManager:
         conn = self.get_connection()
         cursor = conn.cursor()
 
-        cursor.execute("""
+        cursor.execute(
+            """
             UPDATE Courses
             SET StartDate = ?, EndDate = ?, Name = ?, CreditHours = ?, ProfessorID = ?
             WHERE CourseID = ?
-        """, (start_date, end_date, name, credit_hours, professor_id, course_id))
+        """,
+            (start_date, end_date, name, credit_hours, professor_id, course_id),
+        )
 
         conn.commit()
         conn.close()
@@ -391,11 +478,13 @@ class DatabaseManager:
         conn = self.get_connection()
         cursor = conn.cursor()
 
-        cursor.execute("""
+        cursor.execute(
+            """
             SELECT c.CourseID, c.Name, c.StartDate, c.EndDate, c.CreditHours, c.ProfessorID, p.FirstName || ' ' || p.LastName as ProfessorName
             FROM Courses c
             LEFT JOIN Professors p ON c.ProfessorID = p.ProfessorID
-        """)
+        """
+        )
 
         courses_data = cursor.fetchall()
 
@@ -404,7 +493,8 @@ class DatabaseManager:
 
     def get_courses_for_student(self, student_id: int):
         """
-        Retrieves courses for a given student from the database, including credit hours and professor name.
+        Retrieves courses for a given student from the database, including
+        credit hours and professor name.
 
         Parameters
         ----------
@@ -419,13 +509,16 @@ class DatabaseManager:
         cursor = conn.cursor()
 
         # Adjust the SQL query based on your database schema
-        cursor.execute("""
+        cursor.execute(
+            """
             SELECT c.Name, c.StartDate, c.EndDate, c.CreditHours, p.FirstName || ' ' || p.LastName as ProfessorName
             FROM Courses c
             JOIN Enrollments e ON c.CourseID = e.CourseID
             LEFT JOIN Professors p ON c.ProfessorID = p.ProfessorID
             WHERE e.StudentID = ?
-        """, (student_id,))
+        """,
+            (student_id,),
+        )
 
         courses_data = cursor.fetchall()
 
@@ -448,11 +541,14 @@ class DatabaseManager:
         conn = self.get_connection()
         cursor = conn.cursor()
 
-        cursor.execute("""
+        cursor.execute(
+            """
             SELECT c.Name, c.StartDate, c.EndDate, c.CreditHours
             FROM Courses c
             WHERE c.ProfessorID = ?
-        """, (professor_id,))
+        """,
+            (professor_id,),
+        )
 
         courses_data = cursor.fetchall()
 
@@ -475,12 +571,15 @@ class DatabaseManager:
         conn = self.get_connection()
         cursor = conn.cursor()
 
-        cursor.execute("""
+        cursor.execute(
+            """
             SELECT s.StudentID, s.FirstName, s.LastName
             FROM Students s
             JOIN Enrollments e ON s.StudentID = e.StudentID
             WHERE e.CourseID = ?
-        """, (course_id,))
+        """,
+            (course_id,),
+        )
 
         students_data = cursor.fetchall()
 

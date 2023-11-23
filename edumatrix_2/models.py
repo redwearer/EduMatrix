@@ -1,9 +1,24 @@
-# models.py
-
+"""
+This module contains the models for the database.
+"""
 from typing import Optional
 
+
 class Student:
-    def __init__(self, student_id: int, first_name: str, last_name: str, age: int, degree_program: str, completed_credits: int, gpa: float):
+    """
+    Represents a student.
+    """
+
+    def __init__(
+        self,
+        student_id: int,
+        first_name: str,
+        last_name: str,
+        age: int,
+        degree_program: str,
+        completed_credits: int,
+        gpa: float,
+    ):
         """
         Represents a student.
 
@@ -32,8 +47,19 @@ class Student:
         self.completed_credits = completed_credits
         self.gpa = gpa
 
+
 class Professor:
-    def __init__(self, professor_id: int, first_name: str, last_name: str, department: str, academic_achievement: str):
+    """
+    Represents a professor.
+    """
+    def __init__(
+        self,
+        professor_id: int,
+        first_name: str,
+        last_name: str,
+        department: str,
+        academic_achievement: str,
+    ):
         """
         Represents a professor.
 
@@ -56,8 +82,21 @@ class Professor:
         self.department = department
         self.academic_achievement = academic_achievement
 
+
 class Course:
-    def __init__(self, course_id: int, name: str, start_date: str, end_date: str, credit_hours: int, professor_id: Optional[int] = None, professor_name: Optional[str] = None):
+    """
+    Represents a course.
+    """
+    def __init__(
+        self,
+        course_id: int,
+        name: str,
+        start_date: str,
+        end_date: str,
+        credit_hours: int,
+        professor_id: Optional[int] = None,
+        professor_name: Optional[str] = None,
+    ):
         """
         Represents a course.
 
