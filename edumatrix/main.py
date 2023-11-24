@@ -12,7 +12,7 @@ from edumatrix.controllers import (
 )
 from edumatrix.database import DatabaseManager
 
-from PyQt5.QtCore import Qt
+from PyQt5.QtCore import Qt, QDate
 
 from PyQt5.QtWidgets import (
     QApplication,
@@ -30,6 +30,7 @@ from PyQt5.QtWidgets import (
     QWidget,
     QSplitter,
     QHeaderView,
+    QDateEdit,
 )
 
 
@@ -169,8 +170,12 @@ class EduMatrixApp(QMainWindow):
 
         # Input fields for course details
         self.course_name_input = QLineEdit()
-        self.course_start_date_input = QLineEdit()
-        self.course_end_date_input = QLineEdit()
+        self.course_start_date_input = QDateEdit()
+        self.course_start_date_input.setCalendarPopup(True)
+        self.course_start_date_input.setDate(QDate.currentDate())
+        self.course_end_date_input = QDateEdit()
+        self.course_end_date_input.setCalendarPopup(True)
+        self.course_end_date_input.setDate(QDate.currentDate())
         self.course_credits_input = QLineEdit()
         self.course_professor_id_input = QLineEdit()
 
@@ -964,8 +969,8 @@ class EduMatrixApp(QMainWindow):
         """
         # Collect data from input fields
         name = self.course_name_input.text().strip()
-        start_date = self.course_start_date_input.text().strip()
-        end_date = self.course_end_date_input.text().strip()
+        start_date = self.course_start_date_input.date().toString("yyyy-MM-dd")
+        end_date = self.course_end_date_input.date().toString("yyyy-MM-dd")
         course_credits = self.course_credits_input.text().strip()
         professor_id = self.course_professor_id_input.text().strip()
 
