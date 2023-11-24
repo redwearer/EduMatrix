@@ -9,6 +9,5 @@ setup(
     ],
     author='Zachary Curran',
     long_description_content_type='text/markdown',
-    url='https://github.com/yourusername/edumatrix',
-    # More metadata like license, classifiers, etc.
+    url='https://github.com/redwearer/edumatrix',
 )
