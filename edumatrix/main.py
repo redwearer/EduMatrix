@@ -5,9 +5,9 @@ This file contains the main application code for the EduMatrix application.
 
 import sys
 
-from controllers import (CourseController, ProfessorController,
+from edumatrix.controllers import (CourseController, ProfessorController,
                          StudentController)
-from database import DatabaseManager
+from edumatrix.database import DatabaseManager
 
 from PyQt5.QtWidgets import (QApplication, QDialog, QHBoxLayout, QLabel,
                              QLineEdit, QMainWindow, QMessageBox, QPushButton,
@@ -948,7 +948,7 @@ def main():
     login_dialog = LoginDialog()
     if login_dialog.exec_() == QDialog.Accepted:
         db_manager = DatabaseManager(
-            "edumatrix.db"
+            "/home/curranz/dev/py/git/EduMatrix/edumatrix/edumatrix.db"
         )  # Assuming 'edumatrix.db' as the database file
         db_manager.initialize_database()
         student_controller = StudentController(db_manager)

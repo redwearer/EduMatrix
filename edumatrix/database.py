@@ -5,7 +5,6 @@ This module contains the DatabaseManager class.
 import sqlite3
 from sqlite3 import Connection
 
-
 class DatabaseManager:
     """
     This class manages the SQLite database.

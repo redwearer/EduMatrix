@@ -17,3 +17,13 @@ To install EduMatrix, follow these steps:
 
 1. Ensure you have Python installed on your system. EduMatrix requires Python 3.6 or higher.
 2. Clone the repository or download the source code:
+git clone https://github.com/yourusername/edumatrix.git
+3. Navigate to the project directory and install:
+python3 -m pip install .
+## Usage
+
+To run EduMatrix:
+
+1. Navigate to the EduMatrix directory.
+2. Run the application:
+python EduMatrix.py

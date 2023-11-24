@@ -4,8 +4,8 @@ This module contains the controllers for the application.
 """
 from typing import List
 
-from database import DatabaseManager
-from models import Course, Professor, Student
+from edumatrix.database import DatabaseManager
+from edumatrix.models import Course, Professor, Student
 
 
 class StudentController:
