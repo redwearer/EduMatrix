@@ -1,3 +1,4 @@
+#!/usr/bin/python3
 """
 This file contains the main application code for the EduMatrix application.
 """

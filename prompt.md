@@ -46,7 +46,7 @@ When generating python, I would like you to put a comment line at the top of eac
 
 Do you have any questions, or require any clarification before you begin?
 
-
+.
 EduMatrix/
 │
 ├── edumatrix/               # Main application package

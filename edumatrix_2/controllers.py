@@ -1,9 +1,11 @@
+#!/usr/bin/python3
 """
 This module contains the controllers for the application.
 """
 from typing import List
+
 from database import DatabaseManager
-from models import Professor, Student, Course
+from models import Course, Professor, Student
 
 
 class StudentController:

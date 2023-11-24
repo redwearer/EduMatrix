@@ -1,3 +1,4 @@
+#!/usr/bin/python3
 """
 This script generates random data and inserts it into the database.
 """
