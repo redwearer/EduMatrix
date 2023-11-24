@@ -5,14 +5,32 @@ This file contains the main application code for the EduMatrix application.
 
 import sys
 
-from edumatrix.controllers import (CourseController, ProfessorController,
-                         StudentController)
+from edumatrix.controllers import (
+    CourseController,
+    ProfessorController,
+    StudentController,
+)
 from edumatrix.database import DatabaseManager
 
-from PyQt5.QtWidgets import (QApplication, QDialog, QHBoxLayout, QLabel,
-                             QLineEdit, QMainWindow, QMessageBox, QPushButton,
-                             QTableWidget, QTableWidgetItem, QTabWidget,
-                             QVBoxLayout, QWidget)
+from PyQt5.QtCore import Qt
+
+from PyQt5.QtWidgets import (
+    QApplication,
+    QDialog,
+    QHBoxLayout,
+    QLabel,
+    QLineEdit,
+    QMainWindow,
+    QMessageBox,
+    QPushButton,
+    QTableWidget,
+    QTableWidgetItem,
+    QTabWidget,
+    QVBoxLayout,
+    QWidget,
+    QSplitter,
+    QHeaderView,
+)
 
 
 class LoginDialog(QDialog):
@@ -23,6 +41,7 @@ class LoginDialog(QDialog):
     QDialog : PyQt5.QtWidgets.QDialog
         A PyQt5 QDialog object.
     """
+
     def __init__(self):
         """
         Initialize the LoginDialog class.
@@ -97,6 +116,7 @@ class EduMatrixApp(QMainWindow):
     QMainWindow : PyQt5.QtWidgets.QMainWindow
         A PyQt5 QMainWindow object.
     """
+
     def __init__(
         self,
         student_controller: StudentController,
@@ -197,7 +217,10 @@ class EduMatrixApp(QMainWindow):
             The widget for the Students tab.
         """
         student_tab = QWidget()
-        layout = QVBoxLayout()
+        layout = QVBoxLayout(student_tab)
+
+        # Create the splitter and set orientation
+        splitter = QSplitter(Qt.Vertical)
 
         # Buttons for operations
         add_button = QPushButton("Add Student")
@@ -207,15 +230,37 @@ class EduMatrixApp(QMainWindow):
         delete_button = QPushButton("Delete Student")
         delete_button.clicked.connect(self.delete_student)
 
-        # Connect double-click event on the table to load_student_for_editing
-        self.students_table.doubleClicked.connect(self.load_student_for_editing)
-
         # Table for displaying students
         self.students_table = QTableWidget()
         self.students_table.setColumnCount(7)  # Set the number of columns
         self.students_table.setHorizontalHeaderLabels(
             ["ID", "First Name", "Last Name", "Age", "Degree", "Credits", "GPA"]
         )
+        student_table_header = self.students_table.horizontalHeader()
+        student_table_header.setSectionResizeMode(
+            0, QHeaderView.ResizeMode.ResizeToContents
+        )
+        student_table_header.setSectionResizeMode(
+            1, QHeaderView.ResizeMode.ResizeToContents
+        )
+        student_table_header.setSectionResizeMode(
+            2, QHeaderView.ResizeMode.ResizeToContents
+        )
+        student_table_header.setSectionResizeMode(
+            3, QHeaderView.ResizeMode.ResizeToContents
+        )
+        student_table_header.setSectionResizeMode(
+            4, QHeaderView.ResizeMode.ResizeToContents
+        )
+        student_table_header.setSectionResizeMode(
+            5, QHeaderView.ResizeMode.ResizeToContents
+        )
+        student_table_header.setSectionResizeMode(
+            6, QHeaderView.ResizeMode.ResizeToContents
+        )
+
+        # Connect double-click event on the table to load_student_for_editing
+        self.students_table.doubleClicked.connect(self.load_student_for_editing)
 
         # Layout setup
         form_layout = QHBoxLayout()
@@ -237,6 +282,13 @@ class EduMatrixApp(QMainWindow):
         layout.addLayout(form_layout)
         layout.addWidget(self.students_table)
 
+        # Container widget for the second table and its label
+        student_courses_container = QWidget()
+        student_courses_layout = QVBoxLayout(student_courses_container)
+        student_courses_label = QLabel("Courses Enrolled:")
+        student_courses_layout.addWidget(student_courses_label)
+        student_courses_layout.addWidget(self.student_courses_table)
+
         # Second table for displaying courses for the selected student
         self.student_courses_table.setColumnCount(
             5
@@ -244,16 +296,37 @@ class EduMatrixApp(QMainWindow):
         self.student_courses_table.setHorizontalHeaderLabels(
             ["Course Name", "Start Date", "End Date", "Credit Hours", "Professor"]
         )
+        student_courses_table_header = self.student_courses_table.horizontalHeader()
+        student_courses_table_header.setSectionResizeMode(
+            0, QHeaderView.ResizeMode.ResizeToContents
+        )
+        student_courses_table_header.setSectionResizeMode(
+            1, QHeaderView.ResizeMode.ResizeToContents
+        )
+        student_courses_table_header.setSectionResizeMode(
+            2, QHeaderView.ResizeMode.ResizeToContents
+        )
+        student_courses_table_header.setSectionResizeMode(
+            3, QHeaderView.ResizeMode.ResizeToContents
+        )
+        student_courses_table_header.setSectionResizeMode(
+            4, QHeaderView.ResizeMode.ResizeToContents
+        )
 
         # Layout setup
-        layout.addWidget(self.students_table)
-        layout.addWidget(QLabel("Courses Enrolled:"))  # Label for the second table
-        layout.addWidget(self.student_courses_table)
+        # layout.addWidget(self.students_table)
+        # layout.addWidget(QLabel("Courses Enrolled:"))  # Label for the second table
+        # layout.addWidget(self.student_courses_table)
 
         # Connect row selection to update the courses table
         self.students_table.selectionModel().selectionChanged.connect(
             self.on_student_selected
         )
+        splitter.addWidget(self.students_table)
+        splitter.addWidget(student_courses_container)
+
+        # Set the splitter as the central widget
+        layout.addWidget(splitter)
 
         student_tab.setLayout(layout)
         return student_tab
@@ -391,7 +464,8 @@ class EduMatrixApp(QMainWindow):
         # Fetch the student ID from the table
         student_id = self.students_table.item(
             index.row(), 0
-        ).text()  # Assuming student ID is in the first column
+        ).text()
+        # Assuming student ID is in the first column
         self.currently_editing_student_id = int(student_id)
 
         # Load the student data into the input fields
@@ -464,7 +538,10 @@ class EduMatrixApp(QMainWindow):
             The widget for the Professors tab.
         """
         professor_tab = QWidget()
-        layout = QVBoxLayout()
+        layout = QVBoxLayout(professor_tab)
+
+        # Create the splitter and set orientation
+        splitter = QSplitter(Qt.Vertical)
 
         # Buttons for operations
         add_button = QPushButton("Add Professor")
@@ -476,6 +553,23 @@ class EduMatrixApp(QMainWindow):
         self.professors_table.setColumnCount(5)  # Number of fields
         self.professors_table.setHorizontalHeaderLabels(
             ["ID", "First Name", "Last Name", "Department", "Achievement"]
+        )
+
+        professor_table_header = self.professors_table.horizontalHeader()
+        professor_table_header.setSectionResizeMode(
+            0, QHeaderView.ResizeMode.ResizeToContents
+        )
+        professor_table_header.setSectionResizeMode(
+            1, QHeaderView.ResizeMode.ResizeToContents
+        )
+        professor_table_header.setSectionResizeMode(
+            2, QHeaderView.ResizeMode.ResizeToContents
+        )
+        professor_table_header.setSectionResizeMode(
+            3, QHeaderView.ResizeMode.ResizeToContents
+        )
+        professor_table_header.setSectionResizeMode(
+            4, QHeaderView.ResizeMode.ResizeToContents
         )
         self.professors_table.doubleClicked.connect(self.load_professor_for_editing)
 
@@ -500,6 +594,13 @@ class EduMatrixApp(QMainWindow):
         layout.addLayout(form_layout)
         layout.addWidget(self.professors_table)
 
+        # Container widget for the second table and its label
+        professor_courses_container = QWidget()
+        professor_courses_layout = QVBoxLayout(professor_courses_container)
+        professor_courses_label = QLabel("Courses Taught:")
+        professor_courses_layout.addWidget(professor_courses_label)
+        professor_courses_layout.addWidget(self.professor_courses_table)
+
         # Second table for displaying courses taught by the selected professor
         self.professor_courses_table.setColumnCount(
             4
@@ -508,10 +609,30 @@ class EduMatrixApp(QMainWindow):
             ["Course Name", "Start Date", "End Date", "Credit Hours"]
         )
 
+        professor_courses_table_header = self.professor_courses_table.horizontalHeader()
+        professor_courses_table_header.setSectionResizeMode(
+            0, QHeaderView.ResizeMode.ResizeToContents
+        )
+        professor_courses_table_header.setSectionResizeMode(
+            1, QHeaderView.ResizeMode.ResizeToContents
+        )
+        professor_courses_table_header.setSectionResizeMode(
+            2, QHeaderView.ResizeMode.ResizeToContents
+        )
+        professor_courses_table_header.setSectionResizeMode(
+            3, QHeaderView.ResizeMode.ResizeToContents
+        )
+
         # Layout setup
-        layout.addWidget(self.professors_table)
-        layout.addWidget(QLabel("Courses Taught:"))  # Label for the second table
-        layout.addWidget(self.professor_courses_table)
+        # layout.addWidget(self.professors_table)
+        # layout.addWidget(QLabel("Courses Taught:"))  # Label for the second table
+        # layout.addWidget(self.professor_courses_table)
+
+        splitter.addWidget(self.professors_table)
+        splitter.addWidget(professor_courses_container)
+
+        # Set the splitter as the central widget
+        layout.addWidget(splitter)
 
         professor_tab.setLayout(layout)
         return professor_tab
@@ -692,7 +813,10 @@ class EduMatrixApp(QMainWindow):
             The widget for the Courses tab.
         """
         course_tab = QWidget()
-        layout = QVBoxLayout()
+        layout = QVBoxLayout(course_tab)
+
+        # Create the splitter and set orientation
+        splitter = QSplitter(Qt.Vertical)
 
         # Buttons for operations
         add_button = QPushButton("Add Course")
@@ -713,6 +837,30 @@ class EduMatrixApp(QMainWindow):
                 "Professor Name",
             ]
         )
+
+        course_table_header = self.courses_table.horizontalHeader()
+        course_table_header.setSectionResizeMode(
+            0, QHeaderView.ResizeMode.ResizeToContents
+        )   # ID
+        course_table_header.setSectionResizeMode(
+            1, QHeaderView.ResizeMode.ResizeToContents
+        )   # Name
+        course_table_header.setSectionResizeMode(
+            2, QHeaderView.ResizeMode.ResizeToContents
+        )
+        course_table_header.setSectionResizeMode(
+            3, QHeaderView.ResizeMode.ResizeToContents
+        )
+        course_table_header.setSectionResizeMode(
+            4, QHeaderView.ResizeMode.ResizeToContents
+        )
+        course_table_header.setSectionResizeMode(
+            5, QHeaderView.ResizeMode.ResizeToContents
+        )
+        course_table_header.setSectionResizeMode(
+            6, QHeaderView.ResizeMode.ResizeToContents
+        )
+
         self.courses_table.doubleClicked.connect(self.load_course_for_editing)
 
         # Connect row selection to update the students table
@@ -738,6 +886,14 @@ class EduMatrixApp(QMainWindow):
         layout.addLayout(form_layout)
         layout.addWidget(self.courses_table)
 
+        # Container widget for the second table and its label
+        course_students_container = QWidget()
+        course_students_layout = QVBoxLayout(course_students_container)
+        course_students_label = QLabel("Students Enrolled:")
+        course_students_layout.addWidget(course_students_label)
+        course_students_layout.addWidget(self.course_students_table)
+
+
         # Second table for displaying students enrolled in the selected course
         self.course_students_table.setColumnCount(
             3
@@ -746,10 +902,27 @@ class EduMatrixApp(QMainWindow):
             ["Student ID", "First Name", "Last Name"]
         )
 
+        course_students_table_header = self.course_students_table.horizontalHeader()
+        course_students_table_header.setSectionResizeMode(
+            0, QHeaderView.ResizeMode.ResizeToContents
+        )
+        course_students_table_header.setSectionResizeMode(
+            1, QHeaderView.ResizeMode.ResizeToContents
+        )
+        course_students_table_header.setSectionResizeMode(
+            2, QHeaderView.ResizeMode.ResizeToContents
+        )
+
         # Layout setup
-        layout.addWidget(self.courses_table)
-        layout.addWidget(QLabel("Enrolled Students:"))  # Label for the second table
-        layout.addWidget(self.course_students_table)
+        # layout.addWidget(self.courses_table)
+        # layout.addWidget(QLabel("Enrolled Students:"))  # Label for the second table
+        # layout.addWidget(self.course_students_table)
+
+        splitter.addWidget(self.courses_table)
+        splitter.addWidget(course_students_container)
+
+        # Set the splitter as the central widget
+        layout.addWidget(splitter)
 
         course_tab.setLayout(layout)
         return course_tab
@@ -811,7 +984,6 @@ class EduMatrixApp(QMainWindow):
                 self, "Input Error", "Credits and Professor ID must be numbers."
             )
             return
-
 
         if hasattr(self, "currently_editing_course_id"):
             # Update existing course
