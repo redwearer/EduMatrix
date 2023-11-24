@@ -35,7 +35,8 @@ from PyQt5.QtWidgets import (
 
 
 class LoginDialog(QDialog):
-    """_summary_
+    """
+    Dialog window for user login.
 
     Parameters
     ----------
