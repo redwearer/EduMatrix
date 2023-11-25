@@ -7,7 +7,7 @@ setup(
     install_requires=[
         'PyQt5',
     ],
-    author='Zachary Curran',
+    author='redwearer',
     long_description_content_type='text/markdown',
     url='https://github.com/redwearer/edumatrix',
 )
