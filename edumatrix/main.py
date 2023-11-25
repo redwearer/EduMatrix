@@ -31,6 +31,7 @@ from PyQt5.QtWidgets import (
     QSplitter,
     QHeaderView,
     QDateEdit,
+    QComboBox
 )
 
 
@@ -288,6 +289,36 @@ class EduMatrixApp(QMainWindow):
         layout.addLayout(form_layout)
         layout.addWidget(self.students_table)
 
+        # Button to remove a student from a course
+        self.remove_course_button = QPushButton("Remove from Course")
+        self.remove_course_button.clicked.connect(self.remove_student_from_course)
+        self.remove_course_button.setEnabled(False)  # Initially disabled
+
+        # Dropdown for selecting a course to enroll
+        self.enroll_course_dropdown = QComboBox()
+        self.populate_courses_dropdown()  # Populate with courses
+
+        # Dropdown for selecting a start date
+        self.course_start_date_dropdown = QComboBox()
+        self.course_start_date_dropdown.setEnabled(False)
+
+        # Connect course dropdown signal
+        self.enroll_course_dropdown.currentIndexChanged.connect(self.on_course_selection_changed)
+
+        # Button to enroll a student in a course
+        self.enroll_course_button = QPushButton("Enroll in Course")
+        self.enroll_course_button.clicked.connect(self.enroll_student_in_course)
+
+        # Layout for new controls
+        controls_layout = QHBoxLayout()
+        controls_layout.addWidget(self.remove_course_button)
+        controls_layout.addWidget(self.enroll_course_dropdown)
+        controls_layout.addWidget(self.course_start_date_dropdown)
+        controls_layout.addWidget(self.enroll_course_button)
+
+        # Add controls_layout to the main layout
+        layout.addLayout(controls_layout)
+
         # Container widget for the second table and its label
         student_courses_container = QWidget()
         student_courses_layout = QVBoxLayout(student_courses_container)
@@ -297,10 +328,10 @@ class EduMatrixApp(QMainWindow):
 
         # Second table for displaying courses for the selected student
         self.student_courses_table.setColumnCount(
-            5
+            6
         )  # For example, Course Name, Start Date, End Date
         self.student_courses_table.setHorizontalHeaderLabels(
-            ["Course Name", "Start Date", "End Date", "Credit Hours", "Professor"]
+            ["Course ID", "Course Name", "Start Date", "End Date", "Credit Hours", "Professor"]
         )
         student_courses_table_header = self.student_courses_table.horizontalHeader()
         student_courses_table_header.setSectionResizeMode(
@@ -318,6 +349,12 @@ class EduMatrixApp(QMainWindow):
         student_courses_table_header.setSectionResizeMode(
             4, QHeaderView.ResizeMode.ResizeToContents
         )
+        student_courses_table_header.setSectionResizeMode(
+            5, QHeaderView.ResizeMode.ResizeToContents
+        )
+
+        # Connect student_courses_table selection change signal
+        self.student_courses_table.selectionModel().selectionChanged.connect(self.on_student_course_selected)
 
         # Layout setup
         # layout.addWidget(self.students_table)
@@ -509,30 +546,91 @@ class EduMatrixApp(QMainWindow):
         """
         courses = self.course_controller.get_courses_for_student(student_id)
 
-        self.student_courses_table.setColumnCount(5)  # Adjust the column count
+        self.student_courses_table.setColumnCount(6)  # Adjust the column count
         self.student_courses_table.setHorizontalHeaderLabels(
-            ["Course Name", "Start Date", "End Date", "Credit Hours", "Professor"]
+            ["Course ID", "Course Name", "Start Date", "End Date", "Credit Hours", "Professor"]
         )
 
         self.student_courses_table.setRowCount(len(courses))
 
         for row, course in enumerate(courses):
-            # Update these lines to match the order and content of your SQL query
             self.student_courses_table.setItem(
-                row, 0, QTableWidgetItem(course[0])
-            )  # Course Name
+                row, 0, QTableWidgetItem(str(course[0]))
+            )  # Course ID
             self.student_courses_table.setItem(
                 row, 1, QTableWidgetItem(course[1])
-            )  # Start Date
+            )  # Course Name
             self.student_courses_table.setItem(
                 row, 2, QTableWidgetItem(course[2])
+            )  # Start Date
+            self.student_courses_table.setItem(
+                row, 3, QTableWidgetItem(course[3])
             )  # End Date
             self.student_courses_table.setItem(
-                row, 3, QTableWidgetItem(str(course[3]))
+                row, 4, QTableWidgetItem(str(course[4]))
             )  # Credit Hours
             self.student_courses_table.setItem(
-                row, 4, QTableWidgetItem(course[4])
+                row, 5, QTableWidgetItem(course[5])
             )  # Professor Name
+
+    def populate_courses_dropdown(self):
+        """
+        Populates the enroll_course_dropdown with all available courses.
+        """
+        # Fetch all courses and add to the dropdown
+        courses = self.course_controller.list_all_courses()
+        for course in courses:
+            self.enroll_course_dropdown.addItem(course.name, course.course_id)
+
+    def on_course_selection_changed(self, index):
+        """
+        Enables and populates the course_start_date_dropdown based on selected course.
+        """
+        self.course_start_date_dropdown.clear()
+        if index >= 0:
+            course_id = self.enroll_course_dropdown.itemData(index)
+            # Assuming get_course_start_dates method exists in CourseController
+            start_dates = self.course_controller.get_course_start_dates(course_id)
+            for date in start_dates:
+                self.course_start_date_dropdown.addItem(date)
+            self.course_start_date_dropdown.setEnabled(True)
+
+    def enroll_student_in_course(self):
+        """
+        Enrolls the selected student in the chosen course.
+        """
+        selected_student_row = self.students_table.currentRow()
+        if selected_student_row < 0:
+            QMessageBox.warning(self, "Selection Error", "Please select a student.")
+            return
+        student_id = self.students_table.item(selected_student_row, 0).text()
+
+        course_id = self.enroll_course_dropdown.currentData()
+        self.student_controller.enroll_student_in_course(int(student_id), int(course_id))
+        self.populate_student_courses(int(student_id))
+
+    def remove_student_from_course(self):
+        """
+        Removes the selected student from the selected course.
+        """
+        selected_student_row = self.students_table.currentRow()
+        selected_course_row = self.student_courses_table.currentRow()
+        if selected_student_row < 0 or selected_course_row < 0:
+            QMessageBox.warning(self, "Selection Error", "Please select a student and a course.")
+            return
+        student_id = self.students_table.item(selected_student_row, 0).text()
+        course_id = self.student_courses_table.item(selected_course_row, 0).text()  # Assuming course ID is stored
+        self.student_controller.remove_student_from_course(int(student_id), int(course_id))
+        self.populate_student_courses(int(student_id))
+
+    def on_student_course_selected(self, selected, deselected):
+        """
+        Enables the remove_course_button when a course is selected.
+        """
+        if selected.indexes():
+            self.remove_course_button.setEnabled(True)
+        else:
+            self.remove_course_button.setEnabled(False)
 
     def create_professors_tab(self):
         """

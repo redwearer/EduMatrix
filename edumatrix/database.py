@@ -234,6 +234,36 @@ class DatabaseManager:
         conn.close()
         return students_data
 
+    def enroll_student_in_course(self, student_id: int, course_id: int):
+        """
+        Enrolls a student in a course in the database.
+        """
+        conn = self.get_connection()
+        cursor = conn.cursor()
+        # cursor.execute("""
+        #     INSERT INTO Enrollments (StudentID, CourseID, StartDate)
+        #     VALUES (?, ?, ?)
+        # """, (student_id, course_id, start_date))
+        cursor.execute("""
+            INSERT INTO Enrollments (StudentID, CourseID)
+            VALUES (?, ?)
+        """, (student_id, course_id))
+        conn.commit()
+        conn.close()
+
+    def remove_student_from_course(self, student_id: int, course_id: int):
+        """
+        Removes a student from a course in the database.
+        """
+        conn = self.get_connection()
+        cursor = conn.cursor()
+        cursor.execute("""
+            DELETE FROM Enrollments
+            WHERE StudentID = ? AND CourseID = ?
+        """, (student_id, course_id))
+        conn.commit()
+        conn.close()
+
     # CRUD Operations for Professors
     def create_professor(
         self,
@@ -508,10 +538,9 @@ class DatabaseManager:
         conn = self.get_connection()
         cursor = conn.cursor()
 
-        # Adjust the SQL query based on your database schema
         cursor.execute(
             """
-            SELECT c.Name, c.StartDate, c.EndDate, c.CreditHours, p.FirstName || ' ' || p.LastName as ProfessorName
+            SELECT c.CourseID, c.Name, c.StartDate, c.EndDate, c.CreditHours, p.FirstName || ' ' || p.LastName as ProfessorName
             FROM Courses c
             JOIN Enrollments e ON c.CourseID = e.CourseID
             LEFT JOIN Professors p ON c.ProfessorID = p.ProfessorID
@@ -585,3 +614,27 @@ class DatabaseManager:
 
         conn.close()
         return students_data
+
+    def get_course_start_dates(self, course_id: int):
+        """
+        Retrieves available start dates for a given course from the Courses table.
+
+        Parameters
+        ----------
+        course_id : int
+
+        Returns
+        -------
+        list
+            A list of start dates.
+        """
+        conn = self.get_connection()
+        cursor = conn.cursor()
+        cursor.execute("""
+            SELECT StartDate
+            FROM Courses
+            WHERE CourseID = ?
+        """, (course_id,))
+        start_dates = [row[0] for row in cursor.fetchall()]
+        conn.close()
+        return start_dates

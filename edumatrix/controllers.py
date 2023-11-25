@@ -152,6 +152,34 @@ class StudentController:
         """
         return self.db_manager.get_students_for_course(course_id)
 
+    def enroll_student_in_course(self, student_id: int, course_id: int):
+        """
+        Enrolls a student in a course.
+
+        Parameters
+        ----------
+        student_id : int
+            The ID of the student.
+        course_id : int
+            The ID of the course.
+        start_date : str
+            The start date of the course.
+        """
+        # self.db_manager.enroll_student_in_course(student_id, course_id, start_date)
+        self.db_manager.enroll_student_in_course(student_id, course_id)
+
+    def remove_student_from_course(self, student_id: int, course_id: int):
+        """
+        Removes a student from a course.
+
+        Parameters
+        ----------
+        student_id : int
+            The ID of the student.
+        course_id : int
+            The ID of the course.
+        """
+        self.db_manager.remove_student_from_course(student_id, course_id)
 
 class ProfessorController:
     """
@@ -411,3 +439,18 @@ class CourseController:
             A list of courses taught by the professor.
         """
         return self.db_manager.get_courses_for_professor(professor_id)
+
+    def get_course_start_dates(self, course_id: int):
+        """
+        Retrieves start dates for a given course.
+
+        Parameters
+        ----------
+        course_id : int
+
+        Returns
+        -------
+        list
+            A list of available start dates for the course.
+        """
+        return self.db_manager.get_course_start_dates(course_id)
