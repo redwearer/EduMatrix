@@ -5,6 +5,7 @@ This module contains the DatabaseManager class.
 import sqlite3
 from sqlite3 import Connection
 
+
 class DatabaseManager:
     """
     This class manages the SQLite database.
@@ -244,10 +245,13 @@ class DatabaseManager:
         #     INSERT INTO Enrollments (StudentID, CourseID, StartDate)
         #     VALUES (?, ?, ?)
         # """, (student_id, course_id, start_date))
-        cursor.execute("""
+        cursor.execute(
+            """
             INSERT INTO Enrollments (StudentID, CourseID)
             VALUES (?, ?)
-        """, (student_id, course_id))
+        """,
+            (student_id, course_id),
+        )
         conn.commit()
         conn.close()
 
@@ -257,10 +261,13 @@ class DatabaseManager:
         """
         conn = self.get_connection()
         cursor = conn.cursor()
-        cursor.execute("""
+        cursor.execute(
+            """
             DELETE FROM Enrollments
             WHERE StudentID = ? AND CourseID = ?
-        """, (student_id, course_id))
+        """,
+            (student_id, course_id),
+        )
         conn.commit()
         conn.close()
 
@@ -630,11 +637,14 @@ class DatabaseManager:
         """
         conn = self.get_connection()
         cursor = conn.cursor()
-        cursor.execute("""
+        cursor.execute(
+            """
             SELECT StartDate
             FROM Courses
             WHERE CourseID = ?
-        """, (course_id,))
+        """,
+            (course_id,),
+        )
         start_dates = [row[0] for row in cursor.fetchall()]
         conn.close()
         return start_dates
