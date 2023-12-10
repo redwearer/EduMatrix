@@ -1068,6 +1068,10 @@ class EduMatrixApp(QMainWindow):
         delete_button = QPushButton("Delete Course")
         delete_button.clicked.connect(self.delete_course)
 
+        # Button to export course data to CSV
+        export_csv_button = QPushButton("Export to CSV")
+        export_csv_button.clicked.connect(self.export_courses_to_csv)
+
         # Table for displaying courses
         self.courses_table.setColumnCount(7)  # Number of fields
         self.courses_table.setHorizontalHeaderLabels(
@@ -1126,6 +1130,7 @@ class EduMatrixApp(QMainWindow):
         form_layout.addWidget(self.course_professor_id_input)
         form_layout.addWidget(add_button)
         form_layout.addWidget(delete_button)
+        form_layout.addWidget(export_csv_button)
 
         layout.addLayout(form_layout)
         layout.addWidget(self.courses_table)
@@ -1250,6 +1255,58 @@ class EduMatrixApp(QMainWindow):
         # Update the courses_table with new data and clear input fields
         self.update_courses_table()
         self.clear_course_input_fields()
+
+    def export_courses_to_csv(self):
+        """
+        Exports course data to a CSV file, allowing the user to specify the file name and location.
+        """
+        # Fetch course data
+        courses = self.course_controller.list_all_courses()
+
+        # Open a file dialog to select the path and file name for the CSV
+        options = QFileDialog.Options()
+        filename, _ = QFileDialog.getSaveFileName(
+            self, "Save CSV File", "", "CSV Files (*.csv)", options=options
+        )
+
+        # Check if a file name was selected
+        if filename:
+            if not filename.endswith(".csv"):
+                filename += ".csv"  # Ensure the file has a .csv extension
+
+            # Write data to CSV
+            with open(filename, "w", newline="", encoding="utf-8") as csvfile:
+                writer = csv.writer(csvfile)
+                # Write the header
+                writer.writerow(
+                    [
+                        "Course ID",
+                        "Name",
+                        "Start Date",
+                        "End Date",
+                        "Credit Hours",
+                        "Professor Name",
+                    ]
+                )
+
+                # Write the course data
+                for course in courses:
+                    writer.writerow(
+                        [
+                            course.course_id,
+                            course.name,
+                            course.start_date,
+                            course.end_date,
+                            course.credit_hours,
+                            course.professor_name,
+                        ]
+                    )
+
+            QMessageBox.information(
+                self,
+                "Export Successful",
+                f"Course data has been successfully exported to {filename}.",
+            )
 
     def delete_course(self):
         """
