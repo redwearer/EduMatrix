@@ -737,6 +737,10 @@ class EduMatrixApp(QMainWindow):
         delete_button = QPushButton("Delete Professor")
         delete_button.clicked.connect(self.delete_professor)
 
+        # Button to export professor data to CSV
+        export_csv_button = QPushButton("Export to CSV")
+        export_csv_button.clicked.connect(self.export_professors_to_csv)
+
         # Table for displaying professors
         self.professors_table.setColumnCount(5)  # Number of fields
         self.professors_table.setHorizontalHeaderLabels(
@@ -778,6 +782,7 @@ class EduMatrixApp(QMainWindow):
         form_layout.addWidget(self.professor_achievement_input)
         form_layout.addWidget(add_button)
         form_layout.addWidget(delete_button)
+        form_layout.addWidget(export_csv_button)
 
         layout.addLayout(form_layout)
         layout.addWidget(self.professors_table)
@@ -886,6 +891,57 @@ class EduMatrixApp(QMainWindow):
         # Update the professors_table with new data and clear input fields
         self.update_professors_table()
         self.clear_professor_input_fields()
+
+    def export_professors_to_csv(self):
+        """
+        Exports professor data to a CSV file, allowing the user to specify
+        the file name and location.
+        """
+        # Fetch professor data
+        professors = self.professor_controller.list_all_professors()
+
+        # Open a file dialog to select the path and file name for the CSV
+        options = QFileDialog.Options()
+        filename, _ = QFileDialog.getSaveFileName(
+            self, "Save CSV File", "", "CSV Files (*.csv)", options=options
+        )
+
+        # Check if a file name was selected
+        if filename:
+            if not filename.endswith(".csv"):
+                filename += ".csv"  # Ensure the file has a .csv extension
+
+            # Write data to CSV
+            with open(filename, "w", newline="", encoding="utf-8") as csvfile:
+                writer = csv.writer(csvfile)
+                # Write the header
+                writer.writerow(
+                    [
+                        "Professor ID",
+                        "First Name",
+                        "Last Name",
+                        "Department",
+                        "Achievement",
+                    ]
+                )
+
+                # Write the professor data
+                for professor in professors:
+                    writer.writerow(
+                        [
+                            professor.professor_id,
+                            professor.first_name,
+                            professor.last_name,
+                            professor.department,
+                            professor.academic_achievement,
+                        ]
+                    )
+
+            QMessageBox.information(
+                self,
+                "Export Successful",
+                f"Professor data has been successfully exported to {filename}.",
+            )
 
     def delete_professor(self):
         """
