@@ -12,6 +12,7 @@ class StudentController:
     """
     Controller for handling student-related operations.
     """
+
     def __init__(self, db_manager: DatabaseManager):
         """
         Controller for handling student-related operations.
@@ -181,10 +182,12 @@ class StudentController:
         """
         self.db_manager.remove_student_from_course(student_id, course_id)
 
+
 class ProfessorController:
     """
     Controller for handling professor-related operations.
     """
+
     def __init__(self, db_manager: DatabaseManager):
         """
         Controller for handling professor-related operations.
@@ -296,6 +299,7 @@ class CourseController:
     """
     Controller for handling course-related operations.
     """
+
     def __init__(self, db_manager: DatabaseManager):
         """
         Controller for handling course-related operations.
