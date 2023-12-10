@@ -13,3 +13,5 @@ dependencies = [
     "faker",
 ]
 readme = "README.md"
+[gui_scripts]
+"EduMatrix.py"=edumatrix:main
