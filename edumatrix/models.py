@@ -53,6 +53,7 @@ class Professor:
     """
     Represents a professor.
     """
+
     def __init__(
         self,
         professor_id: int,
@@ -88,6 +89,7 @@ class Course:
     """
     Represents a course.
     """
+
     def __init__(
         self,
         course_id: int,
