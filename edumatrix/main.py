@@ -3,7 +3,30 @@
 This file contains the main application code for the EduMatrix application.
 """
 
+import csv
 import sys
+
+from PyQt5.QtCore import QDate, Qt
+from PyQt5.QtWidgets import (
+    QApplication,
+    QComboBox,
+    QDateEdit,
+    QDialog,
+    QFileDialog,
+    QHBoxLayout,
+    QHeaderView,
+    QLabel,
+    QLineEdit,
+    QMainWindow,
+    QMessageBox,
+    QPushButton,
+    QSplitter,
+    QTableWidget,
+    QTableWidgetItem,
+    QTabWidget,
+    QVBoxLayout,
+    QWidget,
+)
 
 from edumatrix.controllers import (
     CourseController,
@@ -11,28 +34,6 @@ from edumatrix.controllers import (
     StudentController,
 )
 from edumatrix.database import DatabaseManager
-
-from PyQt5.QtCore import Qt, QDate
-
-from PyQt5.QtWidgets import (
-    QApplication,
-    QDialog,
-    QHBoxLayout,
-    QLabel,
-    QLineEdit,
-    QMainWindow,
-    QMessageBox,
-    QPushButton,
-    QTableWidget,
-    QTableWidgetItem,
-    QTabWidget,
-    QVBoxLayout,
-    QWidget,
-    QSplitter,
-    QHeaderView,
-    QDateEdit,
-    QComboBox
-)
 
 
 class LoginDialog(QDialog):
@@ -233,6 +234,10 @@ class EduMatrixApp(QMainWindow):
         add_button = QPushButton("Add Student")
         add_button.clicked.connect(self.add_or_update_student)
 
+        # Button to export student data to CSV
+        export_csv_button = QPushButton("Export to CSV")
+        export_csv_button.clicked.connect(self.export_students_to_csv)
+
         # Add Delete Student Button
         delete_button = QPushButton("Delete Student")
         delete_button.clicked.connect(self.delete_student)
@@ -285,6 +290,7 @@ class EduMatrixApp(QMainWindow):
         form_layout.addWidget(self.student_gpa_input)
         form_layout.addWidget(add_button)
         form_layout.addWidget(delete_button)
+        form_layout.addWidget(export_csv_button)
 
         layout.addLayout(form_layout)
         layout.addWidget(self.students_table)
@@ -303,7 +309,9 @@ class EduMatrixApp(QMainWindow):
         self.course_start_date_dropdown.setEnabled(False)
 
         # Connect course dropdown signal
-        self.enroll_course_dropdown.currentIndexChanged.connect(self.on_course_selection_changed)
+        self.enroll_course_dropdown.currentIndexChanged.connect(
+            self.on_course_selection_changed
+        )
 
         # Button to enroll a student in a course
         self.enroll_course_button = QPushButton("Enroll in Course")
@@ -331,7 +339,14 @@ class EduMatrixApp(QMainWindow):
             6
         )  # For example, Course Name, Start Date, End Date
         self.student_courses_table.setHorizontalHeaderLabels(
-            ["Course ID", "Course Name", "Start Date", "End Date", "Credit Hours", "Professor"]
+            [
+                "Course ID",
+                "Course Name",
+                "Start Date",
+                "End Date",
+                "Credit Hours",
+                "Professor",
+            ]
         )
         student_courses_table_header = self.student_courses_table.horizontalHeader()
         student_courses_table_header.setSectionResizeMode(
@@ -354,7 +369,9 @@ class EduMatrixApp(QMainWindow):
         )
 
         # Connect student_courses_table selection change signal
-        self.student_courses_table.selectionModel().selectionChanged.connect(self.on_student_course_selected)
+        self.student_courses_table.selectionModel().selectionChanged.connect(
+            self.on_student_course_selected
+        )
 
         # Layout setup
         # layout.addWidget(self.students_table)
@@ -457,6 +474,60 @@ class EduMatrixApp(QMainWindow):
         self.update_students_table()
         self.clear_student_input_fields()
 
+    def export_students_to_csv(self):
+        """
+        Exports student data to a CSV file, allowing the user to specify the file name and location.
+        """
+        # Fetch student data
+        students = self.student_controller.list_all_students()
+
+        # Open a file dialog to select the path and file name for the CSV
+        options = QFileDialog.Options()
+        filename, _ = QFileDialog.getSaveFileName(
+            self, "Save CSV File", "", "CSV Files (*.csv)", options=options
+        )
+
+        # Check if a file name was selected
+        if filename:
+            if not filename.endswith(".csv"):
+                filename += ".csv"  # Ensure the file has a .csv extension
+
+            # Write data to CSV
+            with open(filename, "w", newline="", encoding="utf-8") as csvfile:
+                writer = csv.writer(csvfile)
+                # Write the header
+                writer.writerow(
+                    [
+                        "Student ID",
+                        "First Name",
+                        "Last Name",
+                        "Age",
+                        "Degree Program",
+                        "Completed Credits",
+                        "GPA",
+                    ]
+                )
+
+                # Write the student data
+                for student in students:
+                    writer.writerow(
+                        [
+                            student.student_id,
+                            student.first_name,
+                            student.last_name,
+                            student.age,
+                            student.degree_program,
+                            student.completed_credits,
+                            student.gpa,
+                        ]
+                    )
+
+            QMessageBox.information(
+                self,
+                "Export Successful",
+                f"Student data has been successfully exported to {filename}.",
+            )
+
     def delete_student(self):
         """
         Deletes the selected student record from the database and updates the table.
@@ -505,9 +576,7 @@ class EduMatrixApp(QMainWindow):
             The index of the selected item in the table.
         """
         # Fetch the student ID from the table
-        student_id = self.students_table.item(
-            index.row(), 0
-        ).text()
+        student_id = self.students_table.item(index.row(), 0).text()
         # Assuming student ID is in the first column
         self.currently_editing_student_id = int(student_id)
 
@@ -548,7 +617,14 @@ class EduMatrixApp(QMainWindow):
 
         self.student_courses_table.setColumnCount(6)  # Adjust the column count
         self.student_courses_table.setHorizontalHeaderLabels(
-            ["Course ID", "Course Name", "Start Date", "End Date", "Credit Hours", "Professor"]
+            [
+                "Course ID",
+                "Course Name",
+                "Start Date",
+                "End Date",
+                "Credit Hours",
+                "Professor",
+            ]
         )
 
         self.student_courses_table.setRowCount(len(courses))
@@ -606,7 +682,9 @@ class EduMatrixApp(QMainWindow):
         student_id = self.students_table.item(selected_student_row, 0).text()
 
         course_id = self.enroll_course_dropdown.currentData()
-        self.student_controller.enroll_student_in_course(int(student_id), int(course_id))
+        self.student_controller.enroll_student_in_course(
+            int(student_id), int(course_id)
+        )
         self.populate_student_courses(int(student_id))
 
     def remove_student_from_course(self):
@@ -616,11 +694,17 @@ class EduMatrixApp(QMainWindow):
         selected_student_row = self.students_table.currentRow()
         selected_course_row = self.student_courses_table.currentRow()
         if selected_student_row < 0 or selected_course_row < 0:
-            QMessageBox.warning(self, "Selection Error", "Please select a student and a course.")
+            QMessageBox.warning(
+                self, "Selection Error", "Please select a student and a course."
+            )
             return
         student_id = self.students_table.item(selected_student_row, 0).text()
-        course_id = self.student_courses_table.item(selected_course_row, 0).text()  # Assuming course ID is stored
-        self.student_controller.remove_student_from_course(int(student_id), int(course_id))
+        course_id = self.student_courses_table.item(
+            selected_course_row, 0
+        ).text()  # Assuming course ID is stored
+        self.student_controller.remove_student_from_course(
+            int(student_id), int(course_id)
+        )
         self.populate_student_courses(int(student_id))
 
     def on_student_course_selected(self, selected, deselected):
@@ -945,10 +1029,10 @@ class EduMatrixApp(QMainWindow):
         course_table_header = self.courses_table.horizontalHeader()
         course_table_header.setSectionResizeMode(
             0, QHeaderView.ResizeMode.ResizeToContents
-        )   # ID
+        )  # ID
         course_table_header.setSectionResizeMode(
             1, QHeaderView.ResizeMode.ResizeToContents
-        )   # Name
+        )  # Name
         course_table_header.setSectionResizeMode(
             2, QHeaderView.ResizeMode.ResizeToContents
         )
@@ -996,7 +1080,6 @@ class EduMatrixApp(QMainWindow):
         course_students_label = QLabel("Students Enrolled:")
         course_students_layout.addWidget(course_students_label)
         course_students_layout.addWidget(self.course_students_table)
-
 
         # Second table for displaying students enrolled in the selected course
         self.course_students_table.setColumnCount(
