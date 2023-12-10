@@ -11,5 +11,6 @@ description = "A university management system application."
 dependencies = [
     "PyQt5",
     "faker",
+    "qdarkstyle",
 ]
 readme = "README.md"

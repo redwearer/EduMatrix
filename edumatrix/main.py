@@ -5,6 +5,7 @@ This file contains the main application code for the EduMatrix application.
 
 import csv
 import sys
+import qdarkstyle
 
 from PyQt5.QtCore import QDate, Qt
 from PyQt5.QtWidgets import (
@@ -163,6 +164,18 @@ class EduMatrixApp(QMainWindow):
         self.student_credits_input = QLineEdit()
         self.student_gpa_input = QLineEdit()
 
+        # Button to remove a student from a course
+        self.remove_course_button = QPushButton("Remove from Course")
+
+        # Dropdown for selecting a course to enroll
+        self.enroll_course_dropdown = QComboBox()
+
+        # Dropdown for selecting a start date
+        self.course_start_date_dropdown = QComboBox()
+
+        # Button to enroll a student in a course
+        self.enroll_course_button = QPushButton("Enroll in Course")
+
         # Table for displaying professors
         self.professors_table = QTableWidget()
 
@@ -296,16 +309,13 @@ class EduMatrixApp(QMainWindow):
         layout.addWidget(self.students_table)
 
         # Button to remove a student from a course
-        self.remove_course_button = QPushButton("Remove from Course")
         self.remove_course_button.clicked.connect(self.remove_student_from_course)
         self.remove_course_button.setEnabled(False)  # Initially disabled
 
         # Dropdown for selecting a course to enroll
-        self.enroll_course_dropdown = QComboBox()
         self.populate_courses_dropdown()  # Populate with courses
 
         # Dropdown for selecting a start date
-        self.course_start_date_dropdown = QComboBox()
         self.course_start_date_dropdown.setEnabled(False)
 
         # Connect course dropdown signal
@@ -314,7 +324,6 @@ class EduMatrixApp(QMainWindow):
         )
 
         # Button to enroll a student in a course
-        self.enroll_course_button = QPushButton("Enroll in Course")
         self.enroll_course_button.clicked.connect(self.enroll_student_in_course)
 
         # Layout for new controls
@@ -707,7 +716,7 @@ class EduMatrixApp(QMainWindow):
         )
         self.populate_student_courses(int(student_id))
 
-    def on_student_course_selected(self, selected, deselected):
+    def on_student_course_selected(self, selected):
         """
         Enables the remove_course_button when a course is selected.
         """
@@ -1416,6 +1425,9 @@ def main():
     Initializes the QApplication and creates the main window.
     """
     app = QApplication(sys.argv)
+
+    # Apply dark theme
+    app.setStyleSheet(qdarkstyle.load_stylesheet_pyqt5())
 
     login_dialog = LoginDialog()
     if login_dialog.exec_() == QDialog.Accepted:
