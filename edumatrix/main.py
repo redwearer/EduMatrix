@@ -345,11 +345,6 @@ class EduMatrixApp(QMainWindow):
             self.on_student_course_selected
         )
 
-        # Layout setup
-        # layout.addWidget(self.students_table)
-        # layout.addWidget(QLabel("Courses Enrolled:"))  # Label for the second table
-        # layout.addWidget(self.student_courses_table)
-
         # Connect row selection to update the courses table
         self.students_table.selectionModel().selectionChanged.connect(
             self.on_student_selected
@@ -794,11 +789,6 @@ class EduMatrixApp(QMainWindow):
             QHeaderView.Stretch
         )
 
-        # Layout setup
-        # layout.addWidget(self.professors_table)
-        # layout.addWidget(QLabel("Courses Taught:"))  # Label for the second table
-        # layout.addWidget(self.professor_courses_table)
-
         splitter.addWidget(self.professors_table)
         splitter.addWidget(professor_courses_container)
 
@@ -1112,11 +1102,6 @@ class EduMatrixApp(QMainWindow):
         self.course_students_table.horizontalHeader().setSectionResizeMode(
             QHeaderView.Stretch
         )
-
-        # Layout setup
-        # layout.addWidget(self.courses_table)
-        # layout.addWidget(QLabel("Enrolled Students:"))  # Label for the second table
-        # layout.addWidget(self.course_students_table)
 
         splitter.addWidget(self.courses_table)
         splitter.addWidget(course_students_container)
