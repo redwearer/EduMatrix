@@ -1389,7 +1389,7 @@ def main():
         main_window = EduMatrixApp(
             student_controller, professor_controller, course_controller
         )
-        main_window.show()
+        main_window.showMaximized()
         sys.exit(app.exec_())
     else:
         sys.exit()
