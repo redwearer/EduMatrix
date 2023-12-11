@@ -5,8 +5,8 @@ This file contains the main application code for the EduMatrix application.
 
 import csv
 import sys
-import qdarkstyle
 
+import qdarkstyle
 from PyQt5.QtCore import QDate, Qt
 from PyQt5.QtWidgets import (
     QApplication,
@@ -244,7 +244,7 @@ class EduMatrixApp(QMainWindow):
         splitter = QSplitter(Qt.Vertical)
 
         # Buttons for operations
-        add_button = QPushButton("Add Student")
+        add_button = QPushButton("Add/Update Student")
         add_button.clicked.connect(self.add_or_update_student)
 
         # Button to export student data to CSV
@@ -261,28 +261,7 @@ class EduMatrixApp(QMainWindow):
         self.students_table.setHorizontalHeaderLabels(
             ["ID", "First Name", "Last Name", "Age", "Degree", "Credits", "GPA"]
         )
-        student_table_header = self.students_table.horizontalHeader()
-        student_table_header.setSectionResizeMode(
-            0, QHeaderView.ResizeMode.ResizeToContents
-        )
-        student_table_header.setSectionResizeMode(
-            1, QHeaderView.ResizeMode.ResizeToContents
-        )
-        student_table_header.setSectionResizeMode(
-            2, QHeaderView.ResizeMode.ResizeToContents
-        )
-        student_table_header.setSectionResizeMode(
-            3, QHeaderView.ResizeMode.ResizeToContents
-        )
-        student_table_header.setSectionResizeMode(
-            4, QHeaderView.ResizeMode.ResizeToContents
-        )
-        student_table_header.setSectionResizeMode(
-            5, QHeaderView.ResizeMode.ResizeToContents
-        )
-        student_table_header.setSectionResizeMode(
-            6, QHeaderView.ResizeMode.ResizeToContents
-        )
+        self.students_table.horizontalHeader().setSectionResizeMode(QHeaderView.Stretch)
 
         # Connect double-click event on the table to load_student_for_editing
         self.students_table.doubleClicked.connect(self.load_student_for_editing)
@@ -357,24 +336,8 @@ class EduMatrixApp(QMainWindow):
                 "Professor",
             ]
         )
-        student_courses_table_header = self.student_courses_table.horizontalHeader()
-        student_courses_table_header.setSectionResizeMode(
-            0, QHeaderView.ResizeMode.ResizeToContents
-        )
-        student_courses_table_header.setSectionResizeMode(
-            1, QHeaderView.ResizeMode.ResizeToContents
-        )
-        student_courses_table_header.setSectionResizeMode(
-            2, QHeaderView.ResizeMode.ResizeToContents
-        )
-        student_courses_table_header.setSectionResizeMode(
-            3, QHeaderView.ResizeMode.ResizeToContents
-        )
-        student_courses_table_header.setSectionResizeMode(
-            4, QHeaderView.ResizeMode.ResizeToContents
-        )
-        student_courses_table_header.setSectionResizeMode(
-            5, QHeaderView.ResizeMode.ResizeToContents
+        self.student_courses_table.horizontalHeader().setSectionResizeMode(
+            QHeaderView.Stretch
         )
 
         # Connect student_courses_table selection change signal
@@ -413,18 +376,46 @@ class EduMatrixApp(QMainWindow):
         # Populate the table with student data
         for row, student in enumerate(students):
             self.students_table.setItem(
-                row, 0, QTableWidgetItem(str(student.student_id))
-            )
-            self.students_table.setItem(row, 1, QTableWidgetItem(student.first_name))
-            self.students_table.setItem(row, 2, QTableWidgetItem(student.last_name))
-            self.students_table.setItem(row, 3, QTableWidgetItem(str(student.age)))
-            self.students_table.setItem(
-                row, 4, QTableWidgetItem(student.degree_program)
+                row, 0, self.create_table_item(str(student.student_id))
             )
             self.students_table.setItem(
-                row, 5, QTableWidgetItem(str(student.completed_credits))
+                row, 1, self.create_table_item(student.first_name)
             )
-            self.students_table.setItem(row, 6, QTableWidgetItem(str(student.gpa)))
+            self.students_table.setItem(
+                row, 2, self.create_table_item(student.last_name)
+            )
+            self.students_table.setItem(
+                row, 3, self.create_table_item(str(student.age))
+            )
+            self.students_table.setItem(
+                row, 4, self.create_table_item(student.degree_program)
+            )
+            self.students_table.setItem(
+                row, 5, self.create_table_item(str(student.completed_credits))
+            )
+            self.students_table.setItem(
+                row, 6, self.create_table_item(str(student.gpa))
+            )
+
+    def create_table_item(self, text: str):
+        """
+        Creates a QTableWidgetItem with the specified text and editability.
+
+        Parameters
+        ----------
+        text : str
+            The text to be displayed in the table item.
+        editable : bool, optional
+            Whether the table item should be editable. Defaults to False.
+
+        Returns
+        -------
+        QTableWidgetItem
+            The created table item.
+        """
+        item = QTableWidgetItem(text)
+        item.setFlags(item.flags() ^ Qt.ItemIsEditable)  # Make the item read-only
+        return item
 
     def add_or_update_student(self):
         """
@@ -640,22 +631,22 @@ class EduMatrixApp(QMainWindow):
 
         for row, course in enumerate(courses):
             self.student_courses_table.setItem(
-                row, 0, QTableWidgetItem(str(course[0]))
+                row, 0, self.create_table_item(str(course[0]))
             )  # Course ID
             self.student_courses_table.setItem(
-                row, 1, QTableWidgetItem(course[1])
+                row, 1, self.create_table_item(course[1])
             )  # Course Name
             self.student_courses_table.setItem(
-                row, 2, QTableWidgetItem(course[2])
+                row, 2, self.create_table_item(course[2])
             )  # Start Date
             self.student_courses_table.setItem(
-                row, 3, QTableWidgetItem(course[3])
+                row, 3, self.create_table_item(course[3])
             )  # End Date
             self.student_courses_table.setItem(
-                row, 4, QTableWidgetItem(str(course[4]))
+                row, 4, self.create_table_item(str(course[4]))
             )  # Credit Hours
             self.student_courses_table.setItem(
-                row, 5, QTableWidgetItem(course[5])
+                row, 5, self.create_table_item(course[5])
             )  # Professor Name
 
     def populate_courses_dropdown(self):
@@ -741,7 +732,7 @@ class EduMatrixApp(QMainWindow):
         splitter = QSplitter(Qt.Vertical)
 
         # Buttons for operations
-        add_button = QPushButton("Add Professor")
+        add_button = QPushButton("Add/Update Professor")
         add_button.clicked.connect(self.add_or_update_professor)
         delete_button = QPushButton("Delete Professor")
         delete_button.clicked.connect(self.delete_professor)
@@ -756,22 +747,10 @@ class EduMatrixApp(QMainWindow):
             ["ID", "First Name", "Last Name", "Department", "Achievement"]
         )
 
-        professor_table_header = self.professors_table.horizontalHeader()
-        professor_table_header.setSectionResizeMode(
-            0, QHeaderView.ResizeMode.ResizeToContents
+        self.professors_table.horizontalHeader().setSectionResizeMode(
+            QHeaderView.Stretch
         )
-        professor_table_header.setSectionResizeMode(
-            1, QHeaderView.ResizeMode.ResizeToContents
-        )
-        professor_table_header.setSectionResizeMode(
-            2, QHeaderView.ResizeMode.ResizeToContents
-        )
-        professor_table_header.setSectionResizeMode(
-            3, QHeaderView.ResizeMode.ResizeToContents
-        )
-        professor_table_header.setSectionResizeMode(
-            4, QHeaderView.ResizeMode.ResizeToContents
-        )
+
         self.professors_table.doubleClicked.connect(self.load_professor_for_editing)
 
         # Connect row selection to update the courses table
@@ -811,18 +790,8 @@ class EduMatrixApp(QMainWindow):
             ["Course Name", "Start Date", "End Date", "Credit Hours"]
         )
 
-        professor_courses_table_header = self.professor_courses_table.horizontalHeader()
-        professor_courses_table_header.setSectionResizeMode(
-            0, QHeaderView.ResizeMode.ResizeToContents
-        )
-        professor_courses_table_header.setSectionResizeMode(
-            1, QHeaderView.ResizeMode.ResizeToContents
-        )
-        professor_courses_table_header.setSectionResizeMode(
-            2, QHeaderView.ResizeMode.ResizeToContents
-        )
-        professor_courses_table_header.setSectionResizeMode(
-            3, QHeaderView.ResizeMode.ResizeToContents
+        self.professor_courses_table.horizontalHeader().setSectionResizeMode(
+            QHeaderView.Stretch
         )
 
         # Layout setup
@@ -849,17 +818,19 @@ class EduMatrixApp(QMainWindow):
 
         for row, professor in enumerate(professors):
             self.professors_table.setItem(
-                row, 0, QTableWidgetItem(str(professor.professor_id))
+                row, 0, self.create_table_item(str(professor.professor_id))
             )
             self.professors_table.setItem(
-                row, 1, QTableWidgetItem(professor.first_name)
-            )
-            self.professors_table.setItem(row, 2, QTableWidgetItem(professor.last_name))
-            self.professors_table.setItem(
-                row, 3, QTableWidgetItem(professor.department)
+                row, 1, self.create_table_item(professor.first_name)
             )
             self.professors_table.setItem(
-                row, 4, QTableWidgetItem(professor.academic_achievement)
+                row, 2, self.create_table_item(professor.last_name)
+            )
+            self.professors_table.setItem(
+                row, 3, self.create_table_item(professor.department)
+            )
+            self.professors_table.setItem(
+                row, 4, self.create_table_item(professor.academic_achievement)
             )
 
     def add_or_update_professor(self):
@@ -1044,16 +1015,16 @@ class EduMatrixApp(QMainWindow):
         for row, course in enumerate(courses):
             # Assuming course data is a tuple like (course_name, start_date, end_date, credit_hours)
             self.professor_courses_table.setItem(
-                row, 0, QTableWidgetItem(course[0])
+                row, 0, self.create_table_item(course[0])
             )  # Course Name
             self.professor_courses_table.setItem(
-                row, 1, QTableWidgetItem(course[1])
+                row, 1, self.create_table_item(course[1])
             )  # Start Date
             self.professor_courses_table.setItem(
-                row, 2, QTableWidgetItem(course[2])
+                row, 2, self.create_table_item(course[2])
             )  # End Date
             self.professor_courses_table.setItem(
-                row, 3, QTableWidgetItem(str(course[3]))
+                row, 3, self.create_table_item(str(course[3]))
             )  # Credit Hours
 
     def create_courses_tab(self):
@@ -1072,7 +1043,7 @@ class EduMatrixApp(QMainWindow):
         splitter = QSplitter(Qt.Vertical)
 
         # Buttons for operations
-        add_button = QPushButton("Add Course")
+        add_button = QPushButton("Add/Update Course")
         add_button.clicked.connect(self.add_or_update_course)
         delete_button = QPushButton("Delete Course")
         delete_button.clicked.connect(self.delete_course)
@@ -1095,28 +1066,7 @@ class EduMatrixApp(QMainWindow):
             ]
         )
 
-        course_table_header = self.courses_table.horizontalHeader()
-        course_table_header.setSectionResizeMode(
-            0, QHeaderView.ResizeMode.ResizeToContents
-        )  # ID
-        course_table_header.setSectionResizeMode(
-            1, QHeaderView.ResizeMode.ResizeToContents
-        )  # Name
-        course_table_header.setSectionResizeMode(
-            2, QHeaderView.ResizeMode.ResizeToContents
-        )
-        course_table_header.setSectionResizeMode(
-            3, QHeaderView.ResizeMode.ResizeToContents
-        )
-        course_table_header.setSectionResizeMode(
-            4, QHeaderView.ResizeMode.ResizeToContents
-        )
-        course_table_header.setSectionResizeMode(
-            5, QHeaderView.ResizeMode.ResizeToContents
-        )
-        course_table_header.setSectionResizeMode(
-            6, QHeaderView.ResizeMode.ResizeToContents
-        )
+        self.courses_table.horizontalHeader().setSectionResizeMode(QHeaderView.Stretch)
 
         self.courses_table.doubleClicked.connect(self.load_course_for_editing)
 
@@ -1159,15 +1109,8 @@ class EduMatrixApp(QMainWindow):
             ["Student ID", "First Name", "Last Name"]
         )
 
-        course_students_table_header = self.course_students_table.horizontalHeader()
-        course_students_table_header.setSectionResizeMode(
-            0, QHeaderView.ResizeMode.ResizeToContents
-        )
-        course_students_table_header.setSectionResizeMode(
-            1, QHeaderView.ResizeMode.ResizeToContents
-        )
-        course_students_table_header.setSectionResizeMode(
-            2, QHeaderView.ResizeMode.ResizeToContents
+        self.course_students_table.horizontalHeader().setSectionResizeMode(
+            QHeaderView.Stretch
         )
 
         # Layout setup
@@ -1194,25 +1137,25 @@ class EduMatrixApp(QMainWindow):
 
         for row, course in enumerate(courses):
             self.courses_table.setItem(
-                row, 0, QTableWidgetItem(str(course.course_id))
+                row, 0, self.create_table_item(str(course.course_id))
             )  # Course ID
             self.courses_table.setItem(
-                row, 1, QTableWidgetItem(course.name)
+                row, 1, self.create_table_item(course.name)
             )  # Course Name
             self.courses_table.setItem(
-                row, 2, QTableWidgetItem(course.start_date)
+                row, 2, self.create_table_item(course.start_date)
             )  # Start Date
             self.courses_table.setItem(
-                row, 3, QTableWidgetItem(course.end_date)
+                row, 3, self.create_table_item(course.end_date)
             )  # End Date
             self.courses_table.setItem(
-                row, 4, QTableWidgetItem(str(course.credit_hours))
+                row, 4, self.create_table_item(str(course.credit_hours))
             )  # Credit Hours
             self.courses_table.setItem(
-                row, 5, QTableWidgetItem(str(course.professor_id))
+                row, 5, self.create_table_item(str(course.professor_id))
             )  # Professor Name
             self.courses_table.setItem(
-                row, 6, QTableWidgetItem(course.professor_name)
+                row, 6, self.create_table_item(course.professor_name)
             )  # Professor Name
 
     def add_or_update_course(self):
@@ -1234,7 +1177,7 @@ class EduMatrixApp(QMainWindow):
             return
 
         try:
-            course_credits = int(credits)
+            course_credits = int(course_credits)
             professor_id = int(professor_id)
         except ValueError:
             QMessageBox.warning(
@@ -1371,8 +1314,12 @@ class EduMatrixApp(QMainWindow):
         course = self.course_controller.get_course(self.currently_editing_course_id)
         if course:
             self.course_name_input.setText(course.name)
-            self.course_start_date_input.setText(course.start_date)
-            self.course_end_date_input.setText(course.end_date)
+            self.course_start_date_input.setDate(
+                QDate.fromString(course.start_date, "yyyy-MM-dd")
+            )
+            self.course_end_date_input.setDate(
+                QDate.fromString(course.end_date, "yyyy-MM-dd")
+            )
             self.course_credits_input.setText(str(course.credit_hours))
             self.course_professor_id_input.setText(str(course.professor_id))
 
@@ -1409,13 +1356,13 @@ class EduMatrixApp(QMainWindow):
         for row, student in enumerate(students):
             # Assuming student data is a tuple like (student_id, first_name, last_name)
             self.course_students_table.setItem(
-                row, 0, QTableWidgetItem(str(student[0]))
+                row, 0, self.create_table_item(str(student[0]))
             )  # Student ID
             self.course_students_table.setItem(
-                row, 1, QTableWidgetItem(student[1])
+                row, 1, self.create_table_item(student[1])
             )  # First Name
             self.course_students_table.setItem(
-                row, 2, QTableWidgetItem(student[2])
+                row, 2, self.create_table_item(student[2])
             )  # Last Name
 
 

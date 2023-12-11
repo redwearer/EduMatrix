@@ -355,7 +355,15 @@ class CourseController:
         """
         course_data = self.db_manager.read_course(course_id)
         if course_data:
-            return Course(*course_data)
+            read_course = Course(
+                course_id=course_data[0],
+                name=course_data[3],
+                start_date=course_data[1],
+                end_date=course_data[2],
+                credit_hours=course_data[4],
+                professor_id=course_data[5],
+            )
+            return read_course
         return None
 
     def update_course(

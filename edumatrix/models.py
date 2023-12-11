@@ -117,7 +117,6 @@ class Course:
             The number of credit hours for the course.
         professor_id : Optional[int]
             The identifier of the professor teaching the course. Default is None.
-            c.CourseID, c.Name, c.StartDate, c.EndDate, c.CreditHours, p.FirstName || ' ' || p.LastName as ProfessorName
         """
         self.course_id = course_id
         self.start_date = start_date
