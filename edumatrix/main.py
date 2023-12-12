@@ -386,7 +386,9 @@ class EduMatrixApp(QMainWindow):
                 row, 4, self.create_table_item(student.degree_program)
             )
             self.students_table.setItem(
-                row, 5, self.create_table_item(str(student.completed_credits))
+                row,
+                5,
+                self.create_table_item(str(student.completed_credits)),
             )
             self.students_table.setItem(
                 row, 6, self.create_table_item(str(student.gpa))
@@ -527,7 +529,7 @@ class EduMatrixApp(QMainWindow):
         """
         Deletes the selected student record from the database and updates the table.
         """
-        selected_items = self.students_table.selectedItems()
+        selected_items = self.students_table.currentRow()
         if not selected_items:
             QMessageBox.warning(
                 self, "Selection Error", "Please select a student to delete."
@@ -535,7 +537,7 @@ class EduMatrixApp(QMainWindow):
             return
 
         # Assuming the first column in the table contains the student ID
-        student_id = int(selected_items[0].text())
+        student_id = self.students_table.item(selected_items, 0).text()
 
         # Confirm deletion
         reply = QMessageBox.question(
@@ -808,7 +810,9 @@ class EduMatrixApp(QMainWindow):
 
         for row, professor in enumerate(professors):
             self.professors_table.setItem(
-                row, 0, self.create_table_item(str(professor.professor_id))
+                row,
+                0,
+                self.create_table_item(str(professor.professor_id)),
             )
             self.professors_table.setItem(
                 row, 1, self.create_table_item(professor.first_name)
@@ -820,7 +824,9 @@ class EduMatrixApp(QMainWindow):
                 row, 3, self.create_table_item(professor.department)
             )
             self.professors_table.setItem(
-                row, 4, self.create_table_item(professor.academic_achievement)
+                row,
+                4,
+                self.create_table_item(professor.academic_achievement),
             )
 
     def add_or_update_professor(self):
@@ -917,7 +923,7 @@ class EduMatrixApp(QMainWindow):
         """
         Deletes the selected professor record from the database and updates the table.
         """
-        selected_items = self.professors_table.selectedItems()
+        selected_items = self.professors_table.currentRow()
         if not selected_items:
             QMessageBox.warning(
                 self, "Selection Error", "Please select a professor to delete."
@@ -925,7 +931,7 @@ class EduMatrixApp(QMainWindow):
             return
 
         # Assuming the first column in the table contains the professor ID
-        professor_id = int(selected_items[0].text())
+        professor_id = int(self.professors_table.item(selected_items, 0).text())
 
         # Confirm deletion
         reply = QMessageBox.question(
@@ -1249,7 +1255,7 @@ class EduMatrixApp(QMainWindow):
         """
         Deletes the selected course record from the database and updates the table.
         """
-        selected_items = self.courses_table.selectedItems()
+        selected_items = self.courses_table.currentRow()
         if not selected_items:
             QMessageBox.warning(
                 self, "Selection Error", "Please select a course to delete."
@@ -1257,7 +1263,7 @@ class EduMatrixApp(QMainWindow):
             return
 
         # Assuming the first column in the table contains the course ID
-        course_id = int(selected_items[0].text())
+        course_id = self.courses_table.item(selected_items, 0).text()
 
         # Confirm deletion
         reply = QMessageBox.question(
